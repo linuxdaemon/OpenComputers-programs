@@ -72,13 +72,14 @@ local function getFiles()
     error(res.." "..msg)
   end
   local commitsJson = JSON:decode(commit_resp)
-  
+
   local treeurl = commitsJson[1].commit.tree.url
   local treereq = inet.request(treeurl.."?recursive=1", nil, BASE_HEADERS)
   local res, msg, headers, tree_resp = readReq(treereq)
   local treejson = JSON:decode(tree_resp)
   for _,obj in ipairs(treejson.tree) do
     if obj.type == "blob" then
+      print("Downloading: " .. obj.path)
       downloadBlob(obj.path, obj.url)
     else
       fs.makeDirectory(fs.concat(localDir, obj.path))
