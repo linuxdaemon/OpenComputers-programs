@@ -72,6 +72,7 @@ local function getFiles()
     error(res.." "..msg)
   end
   local commitsJson = JSON:decode(commit_resp)
+  
   local treeurl = commitsJson[1].commit.tree.url
   local treereq = inet.request(treeurl.."?recursive=1", nil, BASE_HEADERS)
   local res, msg, headers, tree_resp = readReq(treereq)
