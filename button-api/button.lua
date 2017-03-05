@@ -17,7 +17,17 @@ setmetatable(ButtonHandler, {
   end,
 })
 
-function Button:new(text, callback)
+local function centerStr(s, len)
+  local i = len - s:len()
+  if i == 0 then
+    return s
+  end
+  local pre = math.floor(i / 2)
+  local post = math.ceil(i / 2)
+  return string.rep(" ", pre) .. s
+end
+
+function Button:new(x, y, width, height, callback, text)
   local o = {
     x=x,
     y=y,
@@ -50,6 +60,19 @@ function ButtonHandler:stop()
   self.active = false
 end
 
+function ButtonHandler:draw(gpu)
+  local w, h = gpu.getResolution()
+  gpu.fill(1, 1, w, h, " ")
+  for _,btn in ipairs(self.buttons) do
+    local oldBG = gpu.setBackground(0x0000ff)
+    local oldFG = gpu.setForeground(0xffffff)
+    gpu.fill(btn.x, btn.y, btn.width, btn.height, " ")
+    gpu.set(btn.x+1, btn.y+1, centerStr(btn.text, btn.width - 2))
+    gpu.setBackground(oldBG)
+    gpu.setForeground(oldFG)
+  end
+end
+
 function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   if not self.active then
     return false
@@ -62,3 +85,10 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
     end
   end
 end
+
+
+
+return {
+  Button=Button,
+  ButtonHandler=ButtonHandler
+}

@@ -1,4 +1,5 @@
 local component = require("component")
+local event = require("event")
 local term = require("term")
 local button = require("button")
 
@@ -7,8 +8,11 @@ local gpu = component.gpu
 
 local receivers = {}
 
+local caughtInterrupt = false
 local transmitter = dialer.getTransmitters()[1]
+local startingScreen = gpu.getScreen()
 local btnScreen
+local bh = nil
 
 local function getButtonScreen()
   for screen in component.list('screen', true) do
@@ -47,29 +51,62 @@ local function interrupt()
   dialer.interrupt(transmitter)
 end
 
-local function dialCBGen(i)
+local function dialCBGen(rx)
   return function()
-    dial(receivers[i])
+    dial(rx)
   end
 end
 
 local function drawButtons()
-  local rxNames = {}
-  for _, receiver in ipairs(receivers) do
-    rxNames[#rxNames + 1] = receiver.name
-  end
-  local oldScreen = gpu.getScreen()
   gpu.bind(btnScreen.address)
   alignResolution()
   term.clear()
-  local id = button.list(rxNames, 0x0000ff, 0xffffff, gpu)
+  local longest = 16
+  for _,rx in ipairs(receivers) do
+    if rx.name:len() > longest then longest = rx.name:len() end
+  end
+  bh = button.ButtonHandler()
+
+  local scWidth, scHeight = gpu.getResolution()
+  local columnWidth = longest + 4
+  local rowHeight = 5
+  local i = 1
+  local x, y = 1, 1
+  local buttons = {}
+  for _,rx in ipairs(receivers) do
+    if x > (scWidth - columnWidth) then
+      x = 1
+      y = y + 1
+    end
+    if y > (scHeight - rowHeight) then
+      error("Screen size maxed")
+    end
+    bh:register(button.Button(x+1, y+1, (x+columnWidth)-1, (y+rowHeight)-1,dialCBGen(rx), rx.name))
+    x = x + columnWidth
+  end
+
+  bh:start()
+  bh:draw()
 
   term.clear()
-  print("Selected: " .. receivers[id].name)
-  gpu.bind(oldScreen)
+  gpu.bind(startingScreen)
+end
+
+local function registerInterruptHandler()
+  event.listen("interrupted", function()
+    if bh then bh:stop() end
+    gpu.bind(startingScreen)
+    return false
+  end)
+end
+
+local function mainLoop()
+  while not caughtInterrupt do
+    os.sleep(0.1)
+  end
 end
 
 loadRx()
 getButtonScreen()
 drawButtons()
-os.sleep(5)
+mainLoop()

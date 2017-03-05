@@ -20,22 +20,12 @@ local function buttonHandler(eType, screenID, x, y, btn, user)
   end
 end]]
 
-local function centerStr(s, len)
-  local i = len - s:len()
-  if i == 0 then
-    return s
-  end
-  local pre = math.floor(i / 2)
-  local post = math.ceil(i / 2)
-  return string.rep(" ", pre) .. s
-end
-
 function button.list(list, btnColor, txtColor, gpu)
   local longest = 16
   for _,s in ipairs(list) do
     if s:len() > longest then longest = s:len() end
   end
-  
+
   local scWidth, scHeight = gpu.getResolution()
   local columnWidth = longest + 4
   local rowHeight = 5
