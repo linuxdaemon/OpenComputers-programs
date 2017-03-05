@@ -32,7 +32,7 @@ function Button:new(x, y, width, height, callback, text)
     x=x,
     y=y,
     width=width,
-    heigfht=height,
+    height=height,
     callback=callback,
     text=text,
     id=uuid.next()
