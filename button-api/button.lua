@@ -63,7 +63,7 @@ end
 function ButtonHandler:draw(gpu)
   local w, h = gpu.getResolution()
   gpu.fill(1, 1, w, h, " ")
-  for _,btn in ipairs(self.buttons) do
+  for _,btn in pairs(self.buttons) do
     local oldBG = gpu.setBackground(0x0000ff)
     local oldFG = gpu.setForeground(0xffffff)
     gpu.fill(btn.x, btn.y, btn.width, btn.height, " ")
