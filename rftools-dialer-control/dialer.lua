@@ -79,7 +79,7 @@ local function drawButtons()
     if y > (scHeight - rowHeight) then
       error("Screen size maxed")
     end
-    bh:register(button.Button(x+1, y+1, (x+columnWidth)-1, (y+rowHeight)-1,dialCBGen(rx), rx.name))
+    bh:register(button.Button(x+1, y+1, columnWidth-1, rowHeight-1, dialCBGen(rx), rx.name))
     x = x + columnWidth
   end
 
@@ -91,6 +91,7 @@ end
 local function interruptHandler()
   if bh then bh:stop() end
   gpu.bind(startingScreen)
+  term.clear()
   os.exit(0)
 end
 
