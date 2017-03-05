@@ -87,15 +87,13 @@ local function drawButtons()
 
   bh:start()
   bh:draw(gpu)
-
-  term.clear()
   gpu.bind(startingScreen)
 end
 
 local function interruptHandler()
   if bh then bh:stop() end
   gpu.bind(startingScreen)
-  return false
+  os.exit(0)
 end
 
 local function registerInterruptHandler()
@@ -104,8 +102,7 @@ end
 
 local function mainLoop()
   while true do
-    local id = event.pull("interrupted")
-    if id == "interrupted" then
+    if event.pull("interrupted") then
       interruptHandler()
     end
   end
