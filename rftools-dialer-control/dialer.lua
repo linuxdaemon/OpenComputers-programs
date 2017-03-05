@@ -86,7 +86,7 @@ local function drawButtons()
   end
 
   bh:start()
-  bh:draw()
+  bh:draw(gpu)
 
   term.clear()
   gpu.bind(startingScreen)
