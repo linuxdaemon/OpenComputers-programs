@@ -3,8 +3,8 @@ local component = require("component")
 local fs = require("filesystem")
 local shell = require("shell")
 
-local inet = component.internet
-local data = component.data
+local inet = component.getPrimary("internet")
+local data = component.getPrimary("data")
 
 local config = dofile("/home/.gitconfig/config.lua")
 
@@ -26,14 +26,11 @@ local function initDir()
     local i = repo:find("/")
     dir = repo:sub(i+1)
   end
-  local absDir = shell.resolve(dir)
-  localDir = absDir
-  if (fs.exists(absDir)) then
-    io.stderr:write("Directory already exists\n")
-    os.exit(1)
+  localDir = shell.resolve(dir)
+  local gitdir = fs.concat(localDir, ".git")
+  if not fs.exists(gitdir) then
+    fs.makeDirectory(gitdir)
   end
-  local gitdir = fs.concat(absDir, ".git")
-  fs.makeDirectory(gitdir)
   local f = io.open(fs.concat(gitdir, "remote"), "w")
   f:write(repo .. "\n")
   f:close()
@@ -72,11 +69,10 @@ local function getFiles()
   local commit_req = inet.request(API_URL.."/repos/"..repo.."/commits", nil, BASE_HEADERS)
   local res, msg, headers, commit_resp = readReq(commit_req)
   if not(res == 200) then
-    print(res.." "..msg)
+    error(res.." "..msg)
   end
   local commitsJson = JSON:decode(commit_resp)
   local treeurl = commitsJson[1].commit.tree.url
-  --print(treeurl)
   local treereq = inet.request(treeurl.."?recursive=1", nil, BASE_HEADERS)
   local res, msg, headers, tree_resp = readReq(treereq)
   local treejson = JSON:decode(tree_resp)
