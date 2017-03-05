@@ -70,9 +70,7 @@ local function drawButtons()
   local scWidth, scHeight = gpu.getResolution()
   local columnWidth = longest + 4
   local rowHeight = 5
-  local i = 1
   local x, y = 1, 1
-  local buttons = {}
   for _,rx in ipairs(receivers) do
     if x > (scWidth - columnWidth) then
       x = 1

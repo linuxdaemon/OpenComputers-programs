@@ -53,7 +53,7 @@ end
 
 function ButtonHandler:start()
   self.active = true
-  event.listen("touch", function (...) return ButtonHandler:handler(...) end)
+  event.listen("touch", function (...) return self:handler(...) end)
 end
 
 function ButtonHandler:stop()
@@ -77,7 +77,7 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   if not self.active then
     return false
   end
-  for _,btn in ipairs(self.buttons) do
+  for _,btn in pairs(self.buttons) do
     if (btn.minX <= x) and (x <= btn.maxX) then
       if (btn.minY <= y) and (y <= btn.maxY) then
         btn.callback()
