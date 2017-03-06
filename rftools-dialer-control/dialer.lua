@@ -40,6 +40,16 @@ local function alignResolution()
   end
 end
 
+local function clearScreens()
+  local oldScreen = gpu.getScreen()
+  for screen in component.list('screen', true) do
+    gpu.bind(screen)
+    local w, h = gpu.getResolution()
+    gpu.fill(1, 1, w, h, " ")
+  end
+  gpu.bind(oldScreen)
+end
+
 local function loadRx()
   receivers = dialer.getReceivers()
 end
@@ -117,6 +127,7 @@ local function mainLoop()
   end
 end
 
+clearScreens()
 loadRx()
 getButtonScreen()
 drawButtons()
