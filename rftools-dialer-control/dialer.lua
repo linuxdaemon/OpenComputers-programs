@@ -1,4 +1,5 @@
 local component = require("component")
+local computer = require("computer")
 local event = require("event")
 local term = require("term")
 local button = require("button")
@@ -57,6 +58,7 @@ end
 
 local function dialCBGen(rx)
   return function()
+    computer.beep(1000)
     dial(rx)
   end
 end
