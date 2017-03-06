@@ -58,13 +58,6 @@ local function interrupt()
   dialer.interrupt(transmitter)
 end
 
-local function dialCBGen(rx)
-  return function()
-    computer.beep(1000)
-    dial(rx)
-  end
-end
-
 local function drawButtons()
   gpu.bind(btnScreen.address)
   alignResolution()
@@ -107,6 +100,13 @@ local function dial(receiver)
   if not res then
     atExit()
     error(err)
+  end
+end
+
+local function dialCBGen(rx)
+  return function()
+    computer.beep(1000)
+    dial(rx)
   end
 end
 
