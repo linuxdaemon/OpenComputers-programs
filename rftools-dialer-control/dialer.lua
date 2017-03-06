@@ -37,15 +37,6 @@ local function alignResolution()
   else
     error("Error setting resolution")
   end
-  --[[
-  if (w * ratio) <= h then
-    gpu.setResolution(w*2, w * ratio)
-  elseif (h / ratio) <= w then
-    gpu.setResolution((h / ratio)*2, h)
-  else
-    error("Error setting resolution")
-  end
-  ]]
 end
 
 local function loadRx()
@@ -53,7 +44,11 @@ local function loadRx()
 end
 
 local function dial(receiver)
-  dialer.dial(transmitter, receiver, receiver.dimension, false)
+  local res, err = dialer.dial(transmitter, receiver, receiver.dimension, false)
+  if not res then
+    atExit()
+    error(err)
+  end
 end
 
 local function interrupt()
@@ -98,10 +93,14 @@ local function drawButtons()
 end
 
 local function interruptHandler()
+  atExit()
+  os.exit(0)
+end
+
+local function atExit()
   if bh then bh:stop() end
   gpu.bind(startingScreen)
   term.clear()
-  os.exit(0)
 end
 
 local function registerInterruptHandler()
