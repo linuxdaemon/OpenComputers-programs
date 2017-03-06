@@ -77,7 +77,7 @@ local function drawButtons()
       y = y + rowHeight
     end
     if y > (scHeight - rowHeight) then
-      error("Screen size maxed: " + tostring(x) + " " + tostring(y))
+      error("Screen size maxed: " .. tostring(x) .. " " .. tostring(y))
     end
     bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
     x = x + columnWidth
