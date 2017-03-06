@@ -58,6 +58,27 @@ local function interrupt()
   dialer.interrupt(transmitter)
 end
 
+local function atExit()
+  if bh then bh:stop() end
+  gpu.bind(startingScreen)
+  term.clear()
+end
+
+local function dial(receiver)
+  local res, err = dialer.dial(transmitter, receiver, receiver.dimension, false)
+  if not res then
+    atExit()
+    error(err)
+  end
+end
+
+local function dialCBGen(rx)
+  return function()
+    computer.beep(1000)
+    dial(rx)
+  end
+end
+
 local function drawButtons()
   gpu.bind(btnScreen.address)
   alignResolution()
@@ -87,27 +108,6 @@ local function drawButtons()
   --bh:start()
   bh:draw(gpu)
   gpu.bind(startingScreen)
-end
-
-local function atExit()
-  if bh then bh:stop() end
-  gpu.bind(startingScreen)
-  term.clear()
-end
-
-local function dial(receiver)
-  local res, err = dialer.dial(transmitter, receiver, receiver.dimension, false)
-  if not res then
-    atExit()
-    error(err)
-  end
-end
-
-local function dialCBGen(rx)
-  return function()
-    computer.beep(1000)
-    dial(rx)
-  end
 end
 
 local function interruptHandler()
