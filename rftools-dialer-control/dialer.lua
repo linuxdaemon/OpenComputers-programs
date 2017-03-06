@@ -30,7 +30,7 @@ local function alignResolution()
   local a, b = screen.getAspectRatio()
   local ratio = a / b
   local inverse = math.pow(ratio, -1)
-  if ((h * ratio)*2) <= w then
+  if (h * ratio) <= w then
     gpu.setResolution((h * ratio)*2, h)
   elseif (w * inverse) <= h then
     gpu.setResolution(w*2, w * inverse)
