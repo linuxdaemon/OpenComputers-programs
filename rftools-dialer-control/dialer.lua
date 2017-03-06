@@ -30,6 +30,14 @@ local function alignResolution()
   local a, b = screen.getAspectRatio()
   local ratio = a / b -- 1
   local inverse = math.pow(ratio, -1)
+  if (h * inverse) <= w then
+    gpu.setResolution((h * inverse)*2, h)
+  elseif (w * ratio) <= h then
+    gpu.setResolution(w*2, w * ratio)
+  else
+    error("Error setting resolution")
+  end
+  --[[
   if (w * ratio) <= h then
     gpu.setResolution(w*2, w * ratio)
   elseif (h / ratio) <= w then
@@ -37,6 +45,7 @@ local function alignResolution()
   else
     error("Error setting resolution")
   end
+  ]]
 end
 
 local function loadRx()
