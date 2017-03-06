@@ -94,15 +94,15 @@ local function drawButtons()
   gpu.bind(startingScreen)
 end
 
-local function interruptHandler()
-  atExit()
-  os.exit(0)
-end
-
 local function atExit()
   if bh then bh:stop() end
   gpu.bind(startingScreen)
   term.clear()
+end
+
+local function interruptHandler()
+  atExit()
+  os.exit(0)
 end
 
 local function registerInterruptHandler()
