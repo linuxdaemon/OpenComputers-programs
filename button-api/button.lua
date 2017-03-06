@@ -28,6 +28,10 @@ local function centerStr(s, len)
 end
 
 function Button:new(x, y, width, height, callback, text)
+  checkArg(1, x, "number")
+  checkArg(2, y, "number")
+  checkArg(3, width, "number")
+  checkArg(4, height, "number")
   local o = {
     x=x,
     y=y,

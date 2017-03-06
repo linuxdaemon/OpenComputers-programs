@@ -65,7 +65,7 @@ local function drawButtons()
   for _,rx in ipairs(receivers) do
     if rx.name:len() > longest then longest = rx.name:len() end
   end
-  bh = button.ButtonHandler()
+  bh = button.ButtonHandler:new()
 
   local scWidth, scHeight = gpu.getResolution()
   local columnWidth = longest + 4
@@ -79,7 +79,7 @@ local function drawButtons()
     if y > (scHeight - rowHeight) then
       error("Screen size maxed")
     end
-    bh:register(button.Button(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
+    bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
     x = x + columnWidth
   end
 
