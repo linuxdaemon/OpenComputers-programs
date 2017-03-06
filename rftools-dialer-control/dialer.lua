@@ -28,12 +28,12 @@ local function alignResolution()
   local w, h = gpu.maxResolution()
   w = w / 2
   local a, b = screen.getAspectRatio()
-  local ratio = a / b -- 1
+  local ratio = a / b
   local inverse = math.pow(ratio, -1)
-  if (h * inverse) <= w then
-    gpu.setResolution((h * inverse)*2, h)
-  elseif (w * ratio) <= h then
-    gpu.setResolution(w*2, w * ratio)
+  if ((h * ratio)*2) <= w then
+    gpu.setResolution((h * ratio)*2, h)
+  elseif (w * inverse) <= h then
+    gpu.setResolution(w*2, w * inverse)
   else
     error("Error setting resolution")
   end
