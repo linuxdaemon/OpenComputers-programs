@@ -74,7 +74,7 @@ local function drawButtons()
   for _,rx in ipairs(receivers) do
     if x > (scWidth - columnWidth) then
       x = 1
-      y = y + 1
+      y = y + rowHeight
     end
     if y > (scHeight - rowHeight) then
       error("Screen size maxed")
