@@ -1,5 +1,6 @@
 local uuid = require("uuid")
 local event = require("event")
+local computer = require("computer")
 
 local Button = {}
 Button.__index = Button
@@ -84,6 +85,7 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   for _,btn in pairs(self.buttons) do
     if (btn.minX <= x) and (x <= btn.maxX) then
       if (btn.minY <= y) and (y <= btn.maxY) then
+        computer.beep(1000, 1)
         btn.callback()
       end
     end
