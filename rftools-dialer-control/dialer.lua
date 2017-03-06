@@ -99,7 +99,7 @@ local function drawButtons()
     x = x + columnWidth
   end
 
-  bh:start()
+  --bh:start()
   bh:draw(gpu)
   gpu.bind(startingScreen)
 end
@@ -120,9 +120,13 @@ local function registerInterruptHandler()
 end
 
 local function mainLoop()
+  bh.active = true
   while true do
-    if event.pull("interrupted") then
+    local id, screen, x, y, mBtn, user = event.pullMultiple("interrupted", "touch")
+    if id == "interrupted" then
       interruptHandler()
+    elseif id == "touch" then
+      bh:handler(id, screen, x, y, mBtn, user)
     end
   end
 end
