@@ -139,7 +139,7 @@ local function update()
         fs.makeDirectory(fs.concat(workingDir, dir))
       end
       print("Updating " .. path .. "...")
-      downloadRaw(fs.concat(workingDir, path), file.raw_url)
+      downloadRaw(path, file.raw_url)
     elseif file.status == "removed" then
       print("Deleting " .. path .. "...")
       fs.remove(fs.concat(workingDir, path))
