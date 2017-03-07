@@ -88,16 +88,13 @@ end
 
 local function dialCBGen(rx)
   return function(btn)
-    local oldScreen = gpu.getScreen()
-    gpu.bind(btnScreen.address)
     bh:flashButton(gpu, btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
     dial(rx)
-    gpu.bind(oldScreen)
   end
 end
 
 local function drawButtons()
-  gpu.bind(btnScreen.address)
+  log("Drawing buttons")
   alignResolution()
   term.clear()
   local longest = 16
@@ -121,10 +118,7 @@ local function drawButtons()
     bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
     x = x + columnWidth
   end
-
-  --bh:start()
   bh:drawAll(gpu)
-  gpu.bind(startingScreen)
 end
 
 local function interruptHandler()
@@ -148,8 +142,11 @@ local function mainLoop()
   end
 end
 
-clearScreens()
-loadRx()
-getButtonScreen()
-drawButtons()
-mainLoop()
+local function main()
+  getButtonScreen()
+  gpu.bind(btnScreen.address)
+  clearScreens()
+  loadRx()
+  drawButtons()
+  mainLoop()
+end
