@@ -76,7 +76,7 @@ end
 
 local function downloadBlob(path, from)
   local blobreq = inet.request(from, nil, BASE_HEADERS)
-  local res, msg, headers, resp = readReq(req)
+  local res, msg, headers, resp = readReq(blobreq)
   if not(res == 200) then
     error(res.." "..msg)
   end
