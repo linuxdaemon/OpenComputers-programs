@@ -61,6 +61,7 @@ local function clearScreens()
 end
 
 local function loadRx()
+  receivers = {}
   for _,rx in ipairs(dialer.getReceivers()) do
     if rx.dimension == 0 then
       receivers[#receivers + 1] = rx
