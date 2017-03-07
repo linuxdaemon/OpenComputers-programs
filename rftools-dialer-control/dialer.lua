@@ -69,15 +69,19 @@ local function loadRx()
   end
 end
 
-local function interrupt()
-  dialer.interrupt(getTx())
-end
-
 local function atExit()
   if bh and bh:running() then bh:stop() end
   gpu.bind(btnScreen.address)
   term.clear()
   gpu.bind(startingScreen)
+end
+
+local function interrupt()
+  local resm err = dialer.interrupt(getTx())
+  if not res then
+    atExit()
+    error(err)
+  end
 end
 
 local function dial(receiver)
