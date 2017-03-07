@@ -94,7 +94,6 @@ end
 
 local function dialCBGen(rx)
   return function(btn)
-    bh:flashButton(gpu, btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
     dial(rx)
   end
 end
