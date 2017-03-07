@@ -81,7 +81,7 @@ end
 local function dialCBGen(rx)
   return function(btn)
     local oldScreen = gpu.getScreen()
-    gpu.bind(btnScreen)
+    gpu.bind(btnScreen.address)
     bh:flashButton(gpu, btn, 1)
     dial(rx)
     gpu.bind(oldScreen)
