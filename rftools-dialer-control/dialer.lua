@@ -11,8 +11,14 @@ local receivers = {}
 
 local caughtInterrupt = false
 local startingScreen = gpu.getScreen()
-local btnScreen
+local btnScreen = nil
 local bh = nil
+
+local function log(line)
+  gpu.bind(startingScreen)
+  print(line)
+  if btnScreen then gpu.bind(btnScreen.address) end
+end
 
 local function getTx()
   return dialer.getTransmitters()[1]
@@ -70,7 +76,6 @@ local function atExit()
   gpu.bind(btnScreen.address)
   term.clear()
   gpu.bind(startingScreen)
-  term.clear()
 end
 
 local function dial(receiver)
