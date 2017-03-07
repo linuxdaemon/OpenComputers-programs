@@ -18,7 +18,9 @@ local args = {...}
 local remote = nil
 local workingDir
 local gitdir
-local rateLimit = {}
+local rateLimit = {
+  remaining=1
+}
 
 local function readReq(req)
   local data = ""
@@ -64,9 +66,9 @@ local function apiReq(path)
   end
   if headers["X-RateLimit-Limit"] and headers["X-RateLimit-Remaining"] and headers["X-RateLimit-Reset"] then
     rateLimit = {
-      limit=headers["X-RateLimit-Limit"],
-      remaining=headers["X-RateLimit-Remaining"],
-      reset=headers["X-RateLimit-Reset"]
+      limit=headers["X-RateLimit-Limit"][1],
+      remaining=headers["X-RateLimit-Remaining"][1],
+      reset=headers["X-RateLimit-Reset"][1]
     }
   end
   return JSON:decode(resp)
@@ -83,7 +85,7 @@ end
 
 local function checkRateLimit()
   local json = apiReq("/rate_limit")
-  rateLimit = json.core
+  rateLimit = json.resources.core
 end
 
 local function getCommits()
