@@ -63,9 +63,7 @@ end
 local function loadRx()
   receivers = {}
   for _,rx in ipairs(dialer.getReceivers()) do
-    if rx.dimension == 0 then
-      receivers[#receivers + 1] = rx
-    end
+    receivers[#receivers + 1] = rx
   end
 end
 
@@ -129,7 +127,7 @@ local function drawButtons()
     if y > (scHeight - rowHeight) then
       error("Screen size maxed: " .. tostring(x) .. " " .. tostring(y))
     end
-    bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
+    bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name, true))
     x = x + columnWidth
   end
   bh:register(button.Button(1, scHeight-rowHeight, columnWidth-2, rowHeight-2, reload, "Reload"))
