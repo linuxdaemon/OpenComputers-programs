@@ -98,6 +98,10 @@ function ButtonHandler:drawAll(gpu)
   end
 end
 
+function ButtonHandler:clear()
+  self.buttons = {}
+end
+
 function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   if not self.active then
     return false

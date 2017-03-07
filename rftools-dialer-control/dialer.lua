@@ -94,6 +94,8 @@ local function dialCBGen(rx)
   end
 end
 
+local reload -- forward declaration for buttons
+
 local function drawButtons()
   log("Drawing buttons")
   alignResolution()
@@ -102,7 +104,10 @@ local function drawButtons()
   for _,rx in ipairs(receivers) do
     if rx.name:len() > longest then longest = rx.name:len() end
   end
-  bh = button.ButtonHandler:new()
+  if bh then
+    bh:clear()
+  end
+  bh = bh or button.ButtonHandler()
 
   local scWidth, scHeight = gpu.getResolution()
   local columnWidth = longest + 4
@@ -119,7 +124,14 @@ local function drawButtons()
     bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name))
     x = x + columnWidth
   end
+  bh:register(button.Button(1, scHeight-rowHeight, columnWidth-2, rowHeight-2, reload, "Reload"))
+  bh:register(button.Button(scWidth - columnWidth, scHeight - rowHeight, columnWidth-2, rowHeight-2, interrupt, "Interrupt"))
   bh:drawAll(gpu)
+end
+
+local function reload()
+  loadRx()
+  drawButtons()
 end
 
 local function interruptHandler()
