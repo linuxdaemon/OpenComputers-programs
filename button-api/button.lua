@@ -45,7 +45,13 @@ function Button:new(x, y, width, height, callback, text, toggleable)
     text=text,
     selected=false,
     toggle=toggleable or false,
-    id=uuid.next()
+    id=uuid.next(),
+    foreground=0xFFFFFF,
+    background=0x0000FF,
+    sForeground=0xFFFFFF,
+    sBackground=0xA0A0A0,
+    text_align="center",
+    border=1
   }
   return setmetatable(o, self)
 end
@@ -74,30 +80,27 @@ function ButtonHandler:stop()
   self.active = false
 end
 
-function ButtonHandler:draw(button, foreground, background)
-  local foreground = foreground or 0xffffff
-  local background
+function ButtonHandler:draw(button)
+  local oldFG, oldBG
   if button.selected then
-    background = background or 0xa0a0a0
+    oldFG = gpu.setForeground(button.sForeground)
+    oldBG = gpu.setBackground(button.sBackground)
   else
-    background = background or 0x0000ff
+    oldFG = gpu.setForeground(button.foreground)
+    oldBG = gpu.setBackground(button.background)
   end
-  local oldFG = gpu.setForeground(foreground)
-  local oldBG = gpu.setBackground(background)
   gpu.fill(button.x, button.y, button.width, button.height, " ")
-  gpu.set(button.x+1, button.y+1, centerStr(button.text, button.width - 2))
+  gpu.set(button.x+buton.border, button.y+button.border, centerStr(button.text, button.width - 2))
   gpu.setBackground(oldBG)
   gpu.setForeground(oldFG)
 end
 
-function ButtonHandler:flashButton(button, time, fg1, bg1, fg2, bg2)
-  local fg1 = fg1 or 0xffffff
-  local fg2 = fg2 or 0xffffff
-  local bg1 = bg1 or 0x0000ff
-  local bg2 = bg2 or 0xffffff
-  self:draw(button, fg2, bg2)
+function ButtonHandler:flashButton(button, time)
+  button.selected = true
+  self:draw(button)
   os.sleep(time)
-  self:draw(button, fg1, bg1)
+  button.selected = false
+  self:draw(button)
 end
 
 function ButtonHandler:drawAll()
@@ -130,9 +133,11 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
           self:draw(btn)
           btn.callback(btn)
         else
-          self:draw(btn, 0xffffff, 0xa0a0a0)
+          btn.selected = true
+          self:draw(btn)
           btn.callback(btn)
-          self:draw(btn, 0xffffff, 0x0000ff)
+          btn.selected = false
+          self:draw(btn)
         end
       end
     end

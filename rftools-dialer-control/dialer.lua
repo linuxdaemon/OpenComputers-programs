@@ -106,16 +106,19 @@ local function drawButtons()
   log("Drawing buttons")
   alignResolution()
   term.clear()
-  local longest = 16
+  local longest = 5
+  local maxLen = 15
   for _,rx in ipairs(receivers) do
     if rx.name:len() > longest then longest = rx.name:len() end
   end
+  longest = longest < 15 and longest or maxLen
   if bh then
     bh:clear()
   end
   bh = bh or button.ButtonHandler()
 
   local scWidth, scHeight = gpu.getResolution()
+  local scHeight = scHeight - 2
   local columnWidth = longest + 4
   local rowHeight = 5
   local x, y = 1, 1
@@ -127,11 +130,15 @@ local function drawButtons()
     if y > (scHeight - rowHeight) then
       error("Screen size maxed: " .. tostring(x) .. " " .. tostring(y))
     end
-    bh:register(button.Button:new(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name, true))
+    bh:register(button.Button(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name:sub(1, longest), true))
     x = x + columnWidth
   end
-  bh:register(button.Button(1, scHeight-rowHeight, columnWidth-2, rowHeight-2, reload, "Reload"))
-  bh:register(button.Button(scWidth - columnWidth, scHeight - rowHeight, columnWidth-2, rowHeight-2, interrupt, "Interrupt"))
+  local reloadButton = button.Button(1, scHeight-(rowHeight-2), columnWidth-4, rowHeight-4, reload, "Reload")
+  reloadButton.border = 0
+  local intButton = button.Button(scWidth - (columnWidth-2), scHeight - (rowHeight-2), columnWidth-4, rowHeight-4, interrupt, "Interrupt")
+  intButton.border = 0
+  bh:register(reloadButton)
+  bh:register(intButton)
   bh:drawAll()
 end
 
