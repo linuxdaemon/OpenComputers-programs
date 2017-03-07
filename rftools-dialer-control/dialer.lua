@@ -94,7 +94,11 @@ end
 
 local function dialCBGen(rx)
   return function(btn)
-    dial(rx)
+    if btn.selected then
+      dial(rx)
+    else
+      interrupt()
+    end
   end
 end
 

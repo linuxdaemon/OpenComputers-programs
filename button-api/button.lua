@@ -31,7 +31,7 @@ local function centerStr(s, len)
   return string.rep(" ", pre) .. s
 end
 
-function Button:new(x, y, width, height, callback, text)
+function Button:new(x, y, width, height, callback, text, toggleable)
   checkArg(1, x, "number")
   checkArg(2, y, "number")
   checkArg(3, width, "number")
@@ -43,6 +43,8 @@ function Button:new(x, y, width, height, callback, text)
     height=height,
     callback=callback,
     text=text,
+    selected=false,
+    toggle=toggleable or false,
     id=uuid.next()
   }
   return setmetatable(o, self)
@@ -74,7 +76,12 @@ end
 
 function ButtonHandler:draw(button, foreground, background)
   local foreground = foreground or 0xffffff
-  local background = background or 0x0000ff
+  local background
+  if button.selected then
+    background = background or 0xa0a0a0
+  else
+    background = background or 0x0000ff
+  end
   local oldFG = gpu.setForeground(foreground)
   local oldBG = gpu.setBackground(background)
   gpu.fill(button.x, button.y, button.width, button.height, " ")
@@ -112,9 +119,21 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   for _,btn in pairs(self.buttons) do
     if (btn.x <= x) and (x <= btn.x+btn.width) then
       if (btn.y <= y) and (y <= btn.y+btn.height) then
-        self:draw(btn, 0xffffff, 0xa0a0a0)
-        btn.callback(btn)
-        self:draw(btn, 0xffffff, 0x0000ff)
+        if btn.toggle then
+          for _,b in pairs(self.buttons) do
+            if b.selected and not(b.id == btn.id) then
+              b.selected = false
+              self:draw(b)
+            end
+          end
+          btn.selected = not btn.selected
+          self:draw(btn)
+          btn.callback(btn)
+        else
+          self:draw(btn, 0xffffff, 0xa0a0a0)
+          btn.callback(btn)
+          self:draw(btn, 0xffffff, 0x0000ff)
+        end
       end
     end
   end
