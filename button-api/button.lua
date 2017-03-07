@@ -84,7 +84,7 @@ function ButtonHandler:flashButton(gpu, button, time, fg1, bg1, fg2, bg2)
   local fg1 = fg1 or 0xffffff
   local fg2 = fg2 or 0xffffff
   local bg1 = bg1 or 0x0000ff
-  local bg2 = bg2 or 0x0f0fff
+  local bg2 = bg2 or 0xffffff
   self:draw(gpu, button, fg2, bg2)
   os.sleep(time)
   self:draw(gpu, button, fg1, bg1)
