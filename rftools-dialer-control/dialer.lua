@@ -150,3 +150,5 @@ local function main()
   drawButtons()
   mainLoop()
 end
+
+main()
