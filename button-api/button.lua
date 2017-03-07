@@ -88,8 +88,7 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   end
   for _,btn in pairs(self.buttons) do
     if (btn.x <= x) and (x <= btn.x+btn.width) then
-      if (btn.y <= y) and (y <= btn.y+btn.height) then
-        computer.beep(1000, 1)
+      if (btn.y <= y) and (y <= btn.y+btn.height) then 
         btn.callback()
       end
     end

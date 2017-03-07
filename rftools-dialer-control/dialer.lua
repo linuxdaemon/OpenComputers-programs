@@ -80,7 +80,6 @@ end
 
 local function dialCBGen(rx)
   return function()
-    computer.beep(1000)
     dial(rx)
   end
 end
