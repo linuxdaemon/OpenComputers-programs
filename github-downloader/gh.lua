@@ -171,3 +171,5 @@ local function main()
     clone()
   end
 end
+
+main()
