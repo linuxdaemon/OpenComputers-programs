@@ -129,7 +129,7 @@ local function drawButtons()
   bh:drawAll(gpu)
 end
 
-local function reload()
+reload = function()
   loadRx()
   drawButtons()
 end
