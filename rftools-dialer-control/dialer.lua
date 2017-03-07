@@ -51,7 +51,11 @@ local function clearScreens()
 end
 
 local function loadRx()
-  receivers = dialer.getReceivers()
+  for _,rx in ipairs(dialer.getReceivers()) do
+    if rx.dimension == 0 then
+      receivers[#receivers + 1] = rx
+    end
+  end
 end
 
 local function interrupt()
