@@ -74,6 +74,22 @@ local function apiReq(path)
   return JSON:decode(resp)
 end
 
+local function downloadRaw(path, url)
+  local rawreq = inet.request(url, nil, BASE_HEADERS)
+  local res, msg, headers, resp = readReq(rawreq)
+  if not(res == 200) then
+    error(res.." "..msg)
+  end
+  if resp then
+    local f,err = io.open(fs.concat(workingDir, path), "w")
+    if not f then error(err) end
+    f:write(resp)
+    f:close()
+  else
+    error("nil response")
+  end
+end
+
 local function downloadBlob(path, from)
   local blobreq = inet.request(from, nil, BASE_HEADERS)
   local res, msg, headers, resp = readReq(blobreq)
@@ -123,7 +139,7 @@ local function update()
         fs.makeDirectory(fs.concat(workingDir, dir))
       end
       print("Updating " .. path .. "...")
-      downloadBlob(fs.concat(workingDir, path), file.blob_url)
+      downloadRaw(fs.concat(workingDir, path), file.raw_url)
     elseif file.status == "removed" then
       print("Deleting " .. path .. "...")
       fs.remove(fs.concat(workingDir, path))
