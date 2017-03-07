@@ -66,9 +66,9 @@ local function apiReq(path)
   end
   if headers["X-RateLimit-Limit"] and headers["X-RateLimit-Remaining"] and headers["X-RateLimit-Reset"] then
     rateLimit = {
-      limit=headers["X-RateLimit-Limit"][1],
-      remaining=headers["X-RateLimit-Remaining"][1],
-      reset=headers["X-RateLimit-Reset"][1]
+      limit=tonumber(headers["X-RateLimit-Limit"][1]),
+      remaining=tonumber(headers["X-RateLimit-Remaining"][1]),
+      reset=tonumber(headers["X-RateLimit-Reset"][1])
     }
   end
   return JSON:decode(resp)
