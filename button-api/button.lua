@@ -61,6 +61,10 @@ function ButtonHandler:start()
   event.listen("touch", function (...) return self:handler(...) end)
 end
 
+function ButtonHandler:running()
+  return self.active
+end
+
 function ButtonHandler:stop()
   self.active = false
 end

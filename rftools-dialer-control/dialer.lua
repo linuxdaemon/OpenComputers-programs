@@ -59,13 +59,15 @@ local function interrupt()
 end
 
 local function atExit()
-  if bh then bh:stop() end
+  if bh and bh:running() then bh:stop() end
+  gpu.bind(btnScreen.address)
+  term.clear()
   gpu.bind(startingScreen)
   term.clear()
 end
 
 local function dial(receiver)
-  local res, err = dialer.dial(transmitter, receiver, receiver.dimension, false)
+  local res, err = dialer.dial(transmitter.position, receiver.position, receiver.dimension, false)
   if not res then
     atExit()
     error(err)
