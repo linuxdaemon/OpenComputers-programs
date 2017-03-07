@@ -34,7 +34,7 @@ local function getButtonScreen()
 end
 
 local function alignResolution()
-  local sizeRatio = 2
+  local sizeRatio = 1
   local screen = component.proxy(gpu.getScreen())
   local w, h = gpu.maxResolution()
   w = w / 2
