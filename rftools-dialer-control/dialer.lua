@@ -77,7 +77,7 @@ local function atExit()
 end
 
 local function interrupt()
-  local resm err = dialer.interrupt(getTx())
+  local resm err = dialer.interrupt(getTx().position)
   if not res then
     atExit()
     error(err)
