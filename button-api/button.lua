@@ -1,6 +1,9 @@
 local uuid = require("uuid")
 local event = require("event")
 local computer = require("computer")
+local component = require("component")
+
+local gpu = component.getPrimary("gpu")
 
 local Button = {}
 Button.__index = Button
@@ -69,7 +72,7 @@ function ButtonHandler:stop()
   self.active = false
 end
 
-function ButtonHandler:draw(gpu, button, foreground, background)
+function ButtonHandler:draw(button, foreground, background)
   local foreground = foreground or 0xffffff
   local background = background or 0x0000ff
   local oldFG = gpu.setForeground(foreground)
@@ -80,21 +83,21 @@ function ButtonHandler:draw(gpu, button, foreground, background)
   gpu.setForeground(oldFG)
 end
 
-function ButtonHandler:flashButton(gpu, button, time, fg1, bg1, fg2, bg2)
+function ButtonHandler:flashButton(button, time, fg1, bg1, fg2, bg2)
   local fg1 = fg1 or 0xffffff
   local fg2 = fg2 or 0xffffff
   local bg1 = bg1 or 0x0000ff
   local bg2 = bg2 or 0xffffff
-  self:draw(gpu, button, fg2, bg2)
+  self:draw(button, fg2, bg2)
   os.sleep(time)
-  self:draw(gpu, button, fg1, bg1)
+  self:draw(button, fg1, bg1)
 end
 
-function ButtonHandler:drawAll(gpu)
+function ButtonHandler:drawAll()
   local w, h = gpu.getResolution()
   gpu.fill(1, 1, w, h, " ")
   for _,btn in pairs(self.buttons) do
-    self:draw(gpu, btn)
+    self:draw(btn)
   end
 end
 
@@ -109,7 +112,7 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   for _,btn in pairs(self.buttons) do
     if (btn.x <= x) and (x <= btn.x+btn.width) then
       if (btn.y <= y) and (y <= btn.y+btn.height) then
-        self:flashButton(gpu, btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
+        self:flashButton(btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
         btn.callback(btn)
       end
     end

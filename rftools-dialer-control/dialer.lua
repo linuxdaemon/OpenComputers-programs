@@ -130,7 +130,7 @@ local function drawButtons()
   end
   bh:register(button.Button(1, scHeight-rowHeight, columnWidth-2, rowHeight-2, reload, "Reload"))
   bh:register(button.Button(scWidth - columnWidth, scHeight - rowHeight, columnWidth-2, rowHeight-2, interrupt, "Interrupt"))
-  bh:drawAll(gpu)
+  bh:drawAll()
 end
 
 reload = function()
