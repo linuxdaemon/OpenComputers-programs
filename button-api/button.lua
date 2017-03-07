@@ -69,16 +69,32 @@ function ButtonHandler:stop()
   self.active = false
 end
 
-function ButtonHandler:draw(gpu)
+function ButtonHandler:draw(gpu, button, foreground, background)
+  local foreground = foreground or 0xffffff
+  local background = background or 0x0000ff
+  local oldFG = gpu.setForeground(foreground)
+  local oldBG = gpu.setBackground(background)
+  gpu.fill(button.x, button.y, button.width, button.height, " ")
+  gpu.set(button.x+1, button.y+1, centerStr(button.text, button.width - 2))
+  gpu.setBackground(oldBG)
+  gpu.setForeground(oldFG)
+end
+
+function ButtonHandler:flashButton(gpu, button, time, fg1, bg1, fg2, bg2)
+  local fg1 = fg1 or 0xffffff
+  local fg2 = fg2 or 0xffffff
+  local bg1 = bg1 or 0x0000ff
+  local bg2 = bg2 or 0x0606ff
+  self:draw(gpu, button, fg2, bg2)
+  os.sleep(time)
+  self:draw(gpu, button, fg1, bg1)
+end
+
+function ButtonHandler:drawAll(gpu)
   local w, h = gpu.getResolution()
   gpu.fill(1, 1, w, h, " ")
   for _,btn in pairs(self.buttons) do
-    local oldBG = gpu.setBackground(0x0000ff)
-    local oldFG = gpu.setForeground(0xffffff)
-    gpu.fill(btn.x, btn.y, btn.width, btn.height, " ")
-    gpu.set(btn.x+1, btn.y+1, centerStr(btn.text, btn.width - 2))
-    gpu.setBackground(oldBG)
-    gpu.setForeground(oldFG)
+    self:draw(gpu, btn)
   end
 end
 
@@ -88,8 +104,8 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   end
   for _,btn in pairs(self.buttons) do
     if (btn.x <= x) and (x <= btn.x+btn.width) then
-      if (btn.y <= y) and (y <= btn.y+btn.height) then 
-        btn.callback()
+      if (btn.y <= y) and (y <= btn.y+btn.height) then
+        btn.callback(btn)
       end
     end
   end

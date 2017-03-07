@@ -79,7 +79,8 @@ local function dial(receiver)
 end
 
 local function dialCBGen(rx)
-  return function()
+  return function(btn)
+    bh:flashButton(gpu, btn, 1)
     dial(rx)
   end
 end
@@ -111,7 +112,7 @@ local function drawButtons()
   end
 
   --bh:start()
-  bh:draw(gpu)
+  bh:drawAll(gpu)
   gpu.bind(startingScreen)
 end
 
