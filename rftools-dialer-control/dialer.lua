@@ -10,10 +10,13 @@ local gpu = component.gpu
 local receivers = {}
 
 local caughtInterrupt = false
-local transmitter = dialer.getTransmitters()[1]
 local startingScreen = gpu.getScreen()
 local btnScreen
 local bh = nil
+
+local function getTx()
+  return dialer.getTransmitters()[1]
+end
 
 local function getButtonScreen()
   for screen in component.list('screen', true) do
@@ -59,7 +62,7 @@ local function loadRx()
 end
 
 local function interrupt()
-  dialer.interrupt(transmitter)
+  dialer.interrupt(getTx())
 end
 
 local function atExit()
@@ -71,7 +74,7 @@ local function atExit()
 end
 
 local function dial(receiver)
-  local res, err = dialer.dial(transmitter.position, receiver.position, receiver.dimension, false)
+  local res, err = dialer.dial(getTx().position, receiver.position, receiver.dimension, false)
   if not res then
     atExit()
     error(err)
@@ -82,7 +85,7 @@ local function dialCBGen(rx)
   return function(btn)
     local oldScreen = gpu.getScreen()
     gpu.bind(btnScreen.address)
-    bh:flashButton(gpu, btn, 1, 0xffffff, 0x0000ff, 0xffffff, 0xf0f0f0)
+    bh:flashButton(gpu, btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
     dial(rx)
     gpu.bind(oldScreen)
   end
