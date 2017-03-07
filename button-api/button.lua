@@ -112,8 +112,9 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   for _,btn in pairs(self.buttons) do
     if (btn.x <= x) and (x <= btn.x+btn.width) then
       if (btn.y <= y) and (y <= btn.y+btn.height) then
-        self:flashButton(btn, 0.1, 0xffffff, 0x0000ff, 0xffffff, 0xa0a0a0)
+        self:draw(btn, 0xffffff, 0xa0a0a0)
         btn.callback(btn)
+        self:draw(btn, 0xffffff, 0x0000ff)
       end
     end
   end
