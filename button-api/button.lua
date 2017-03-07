@@ -90,7 +90,7 @@ function ButtonHandler:draw(button)
     oldBG = gpu.setBackground(button.background)
   end
   gpu.fill(button.x, button.y, button.width, button.height, " ")
-  gpu.set(button.x+buton.border, button.y+button.border, centerStr(button.text, button.width - 2))
+  gpu.set(button.x+button.border, button.y+button.border, centerStr(button.text, button.width - 2))
   gpu.setBackground(oldBG)
   gpu.setForeground(oldFG)
 end
