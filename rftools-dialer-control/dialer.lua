@@ -34,6 +34,7 @@ local function getButtonScreen()
 end
 
 local function alignResolution()
+  local sizeRatio = 2
   local screen = component.proxy(gpu.getScreen())
   local w, h = gpu.maxResolution()
   w = w / 2
@@ -41,9 +42,9 @@ local function alignResolution()
   local ratio = a / b
   local inverse = math.pow(ratio, -1)
   if (h * ratio) <= w then
-    gpu.setResolution((h * ratio)*2, h)
+    gpu.setResolution(((h * ratio)*2)/sizeRatio, h/sizeRatio)
   elseif (w * inverse) <= h then
-    gpu.setResolution(w*2, w * inverse)
+    gpu.setResolution((w*2)/sizeRatio, (w * inverse)/sizeRatio)
   else
     error("Error setting resolution")
   end
