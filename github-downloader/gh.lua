@@ -75,7 +75,7 @@ local function apiReq(path)
 end
 
 local function downloadBlob(path, from)
-  local apiPath = from:gsub("^https?://api.github.com", "")
+  local apiPath = from:gsub("^https?://[^/]+/", "/")
   local blobjson = apiReq(apiPath)
   local f = io.open(fs.concat(workingDir, path), "w")
   local s = data.decode64(blobjson.content)
