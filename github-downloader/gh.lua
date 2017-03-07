@@ -110,7 +110,7 @@ local function update()
   local commits = getCommits()
   local newestCommit = commits[1].sha
   local compare = apiReq("/repos/"..remote.."/compare/"..lastCommit.."..."..newestCommit)
-  local files = compare.filesystem
+  local files = compare.files
   for _,file in ipairs(files) do
     local path = file.filename
     if file.status == "added" or file.status == "modified" then
