@@ -75,8 +75,12 @@ local function apiReq(path)
 end
 
 local function downloadBlob(path, from)
-  local apiPath = from:gsub("^https?://[^/]+/", "/")
-  local blobjson = apiReq(apiPath)
+  local blobreq = inet.request(from, nil, BASE_HEADERS)
+  local res, msg, headers, resp = readReq(req)
+  if not(res == 200) then
+    error(res.." "..msg)
+  end
+  local blobjson = JSON:decode(resp)
   local f = io.open(fs.concat(workingDir, path), "w")
   local s = data.decode64(blobjson.content)
   f:write(s)
