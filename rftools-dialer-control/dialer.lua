@@ -133,10 +133,12 @@ local function drawButtons()
     bh:register(button.Button(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name:sub(1, longest), true))
     x = x + columnWidth
   end
-  local reloadButton = button.Button(1, scHeight-(rowHeight-2), columnWidth-4, rowHeight-4, reload, "Reload")
-  reloadButton.border = 0
-  local intButton = button.Button(scWidth - (columnWidth-2), scHeight - (rowHeight-2), columnWidth-4, rowHeight-4, interrupt, "Interrupt")
-  intButton.border = 0
+  local reloadButtonTxt = "Reload"
+  local reloadButton = button.Button(1, scHeight - 3, reloadButtonTxt:len() + 2, 3, reload, reloadButtonTxt)
+  reloadButton.border = 1
+  local intButtonTxt = "Interrupt"
+  local intButton = button.Button(scWidth - (intButtonTxt:len()+2), scHeight - 3, intButtonTxt:len() + 2, 3, interrupt, intButtonTxt)
+  intButton.border = 1
   bh:register(reloadButton)
   bh:register(intButton)
   bh:drawAll()
