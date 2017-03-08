@@ -79,6 +79,7 @@ local function interrupt()
   for _,btn in pairs(bh.buttons) do
     if btn.selected then
       btn.selected = false
+      bh:draw(btn)
     end
   end
   if not res then
