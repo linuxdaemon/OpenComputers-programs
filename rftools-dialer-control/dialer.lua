@@ -76,6 +76,11 @@ end
 
 local function interrupt()
   local res, err = dialer.interrupt(getTx().position)
+  for _,btn in bh.buttons do
+    if btn.selected then
+      btn.selected = false
+    end
+  end
   if not res then
     atExit()
     error(err)
