@@ -151,6 +151,7 @@ local function drawButtons()
 end
 
 reload = function()
+  interrupt()
   loadRx()
   drawButtons()
 end
