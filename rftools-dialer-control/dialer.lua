@@ -76,7 +76,7 @@ end
 
 local function interrupt()
   local res, err = dialer.interrupt(getTx().position)
-  for _,btn in bh.buttons do
+  for _,btn in pairs(bh.buttons) do
     if btn.selected then
       btn.selected = false
     end
