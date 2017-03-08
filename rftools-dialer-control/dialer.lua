@@ -107,11 +107,11 @@ local function drawButtons()
   alignResolution()
   term.clear()
   local longest = 5
-  local maxLen = 15
+  local maxLen = 25
   for _,rx in ipairs(receivers) do
     if rx.name:len() > longest then longest = rx.name:len() end
   end
-  longest = longest < 15 and longest or maxLen
+  longest = longest < maxLen and longest or maxLen
   if bh then
     bh:clear()
   end
