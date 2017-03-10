@@ -12,11 +12,11 @@ local function sort()
   for i=1,inInv:size() do
     local stack = inInv:getStackInSlot(i)
     if stack and stack.enchantments and #stack.enchantments > 0 then
-      if not inInv:transferSlotToSide(outInv.side, 1, i) then
-        inInv:transferSlotToSide(trashInv.side, 1, i)
+      if not inInv:transferSlotToSide(outInv.side, 1, i, outInv:getNextFreeSlot()) then
+        inInv:transferSlotToSide(trashInv.side, 1, i, 1)
       end
     else
-      inInv:transferSlotToSide(trashInv.side, 1, i)
+      inInv:transferSlotToSide(trashInv.side, 1, i, 1)
     end
   end
 end
