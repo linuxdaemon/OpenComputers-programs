@@ -26,9 +26,9 @@ function Inventory:getStackSizeInSlot(slot)
   return self.controller.getSlotStackSize(self.side, slot)
 end
 
-function Inventory:transferSlotToSide(fromSlot, toSide, toSlot, count)
+function Inventory:transferSlotToSide(...)
   local count = count or 1
-  return self.controller.transferItem(self.side, toSide, count, fromSlot, toSlot)
+  return self.controller.transferItem(self.side, ...)
 end
 
 return {
