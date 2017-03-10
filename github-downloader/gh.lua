@@ -236,7 +236,7 @@ local function clone()
   fs.makeDirectory(gitdir)
   writeFile(fs.concat(gitdir, "remote"), remote)
   local commits = getCommits()
-  local commit = commitsJson[1]
+  local commit = commits[1]
   writeFile(fs.concat(gitdir, "commit"), commit.sha)
   local treejson = apiReq(commit.commit.tree.url.."?recursive=1")
   for _,obj in ipairs(treejson.tree) do
