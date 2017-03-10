@@ -1,26 +1,92 @@
 local JSON = require("JSON")
 local component = require("component")
 local fs = require("filesystem")
+local term = require("term")
 local shell = require("shell")
 
 local inet = component.getPrimary("internet")
 local data = component.getPrimary("data")
 
-local config = dofile("/home/.gitconfig/config.lua")
+local config = {}
 
 local API_URL = "https://api.github.com"
 local BASE_HEADERS = {
-  ["Authorization"] = config.api_auth,
   ["User-Agent"] = "OpenComputers"
 }
 
 local args = {...}
 local remote = nil
-local workingDir
-local gitdir
+local workingDir = nil
+local gitdir = nil
 local rateLimit = {
   remaining=1
 }
+
+local function authPrompt()
+  local auth = {}
+  local authtype = ""
+  repeat
+    io.stdout:write("Auth method[basic/oauth]: ")
+    authtype = term.read()
+  until authtype:lower() == "basic" or authtype:lower() == "oauth"
+  if authtype:lower() == "basic" or authtype:lower() == "oauth" then
+    auth.type = authtype:lower()
+  end
+  if auth.type == "basic" then
+    io.stdout:write("Username: ")
+    auth.username = term.read()
+    io.stdout:write("Password: ")
+    auth.pass = term.read()
+  elseif auth.type == "oauth" then
+    io.stdout:write("Token: ")
+    auth.token = term.read()
+  end
+  config.api_auth = auth
+end
+
+local function tableSer(tbl, depth)
+  local depth = depth or 1
+  local indentWidth = 1
+  local s = "{\n"
+  for k,v in pairs(tbl) do
+    s = s .. string.rep(" ", depth * indentWidth) .. k .. " = "
+    if type(v) == "table" then
+      s = s .. tableSer(v, depth + 1)
+    elseif type(v) == "string" then
+      s = s .. '"' .. v .. '"'
+    else
+      s = s .. tostring(v)
+    end
+    s = s .. ",\n"
+  end
+  s = s:sub(1,s:len()-2) .. "\n"
+  s = s .. string.rep(" ", (depth - 1) * indentWidth) .. "}"
+  return s
+end
+
+local function saveConfig(path)
+  local s = tableSer(config)
+  s = "return " .. s
+  local f = io.open(path, "w")
+  f:write(s)
+  f:close()
+end
+
+local function loadConfig()
+  local configPath = "/home/.gitconfig/config.lua"
+  if not fs.exists(configPath) then
+    authPrompt()
+    saveConfig(configPath)
+  end
+  config = dofile(configPath)
+  if config.api_auth then
+    if config.api_auth.type == "basic" then
+      BASE_HEADERS["Authorization"] = "basic " .. data.encode64(config.api_auth.username + ":" + config.api_auth.password)
+    elseif config.api_auth.type == "oauth" then
+      -- TODO add oauth handling
+    end
+  end
+end
 
 local function readReq(req)
   local data = ""
