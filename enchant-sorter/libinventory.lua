@@ -37,7 +37,8 @@ function Inventory:getNextFreeSlot()
   for i=1,self:size() do
     if slot > self:size() then slot = 1 end
     if not self:getStackInSlot(slot) then
-      return self.freeSlot = slot
+      self.freeSlot = slot
+      return self.freeSlot
     end
     slot = slot + 1
   end
