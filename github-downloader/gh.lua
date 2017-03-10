@@ -238,7 +238,9 @@ local function clone()
   local commits = getCommits()
   local commit = commits[1]
   writeFile(fs.concat(gitdir, "commit"), commit.sha)
-  local treejson = apiReq(commit.commit.tree.url.."?recursive=1")
+  local url = commit.commit.tree.url.."?recursive=1"
+  url = url:gsub("^https?://[^/]+", "")
+  local treejson = apiReq(url)
   for _,obj in ipairs(treejson.tree) do
     if obj.type == "blob" then
       print("Downloading: " .. obj.path)
