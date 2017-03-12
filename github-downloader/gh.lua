@@ -1,4 +1,5 @@
-local JSON = require("JSON")
+-- local JSON = require("JSON")
+local JSON = nil
 local component = require("component")
 local fs = require("filesystem")
 local term = require("term")
@@ -21,6 +22,62 @@ local gitdir = nil
 local rateLimit = {
   remaining=1
 }
+
+local function readReq(req)
+  local data = ""
+  while true do
+    local chunk, reason = req.read()
+    if not chunk then
+      req.close()
+      if reason then
+        error(reason)
+      else
+        break
+      end
+    else
+      data = data .. chunk
+    end
+  end
+  local res, msg, headers = req.response()
+  return res, msg, headers, data
+end
+
+local function downloadFile(url, path)
+  local req = inet.request(url, nil, BASE_HEADERS)
+  local res, msg, headers, resp = readReq(req)
+  if not(res == 200) then
+    error(res.." "..msg)
+  end
+  if resp then
+    local parentDirs = fs.path(path)
+    if #parentDirs > 0 then
+      fs.makeDirectory(parentDirs)
+    end
+    local f, err = io.open(path, "w")
+    if not f then error(err) end
+    f:write(resp)
+    f:close()
+  else
+    error("nil response")
+  end
+end
+
+local function getDep(url, name)
+  local dep = nil
+  local res, err = pcall(function() dep = require(name) end)
+  if not res then
+    print("Downloading libs...")
+    downloadFile(url, "/home/lib/"..name..".lua")
+    local res, err = pcall(function() dep = require(name) end)
+    if not res then
+      error(err)
+    end
+  end
+end
+
+local function checkDeps()
+  getDep("http://regex.info/code/JSON.lua", "JSON")
+end
 
 local function authPrompt()
   local auth = {}
@@ -88,25 +145,6 @@ local function loadConfig()
   end
 end
 
-local function readReq(req)
-  local data = ""
-  while true do
-    local chunk, reason = req.read()
-    if not chunk then
-      req.close()
-      if reason then
-        error(reason)
-      else
-        break
-      end
-    else
-      data = data .. chunk
-    end
-  end
-  local res, msg, headers = req.response()
-  return res, msg, headers, data
-end
-
 local function readFile(path)
   local f = io.open(path)
   local s = f:read("*a")
@@ -141,19 +179,7 @@ local function apiReq(path)
 end
 
 local function downloadRaw(path, url)
-  local rawreq = inet.request(url, nil, BASE_HEADERS)
-  local res, msg, headers, resp = readReq(rawreq)
-  if not(res == 200) then
-    error(res.." "..msg)
-  end
-  if resp then
-    local f,err = io.open(fs.concat(workingDir, path), "w")
-    if not f then error(err) end
-    f:write(resp)
-    f:close()
-  else
-    error("nil response")
-  end
+  downloadFile(url, fs.concat(workingDir, path))
 end
 
 local function downloadBlob(path, from)
