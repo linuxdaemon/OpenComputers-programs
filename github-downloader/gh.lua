@@ -76,7 +76,7 @@ local function getDep(url, name)
 end
 
 local function checkDeps()
-  getDep("http://regex.info/code/JSON.lua", "JSON")
+  JSON = getDep("http://regex.info/code/JSON.lua", "JSON")
 end
 
 local function authPrompt()
