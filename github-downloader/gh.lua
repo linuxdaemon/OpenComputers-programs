@@ -278,6 +278,7 @@ local function clone()
 end
 
 local function main()
+  checkDeps()
   local cmd = args[1]
   table.remove(args, 1)
   checkRateLimit()
