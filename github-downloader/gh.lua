@@ -73,6 +73,7 @@ local function getDep(url, name)
       error(err)
     end
   end
+  return dep
 end
 
 local function checkDeps()
