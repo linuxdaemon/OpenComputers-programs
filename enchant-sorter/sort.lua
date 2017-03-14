@@ -15,12 +15,12 @@ local function sort()
     if stack then
       if stack.enchantments and #stack.enchantments > 0 then
         print("Attempting to move item to output")
-        if not inInv:transferSlotToSide(outInv.side, stack.size, i, outInv:getNextFreeSlot()) then
+        if not inInv:transferSlotToSide(outInv.side, stack.size, i, -1) then
           print("Output full, trashing item")
-          inInv:transferSlotToSide(trashInv.side, stack.size, i, 1)
+          inInv:transferSlotToSide(trashInv.side, stack.size, i, -1)
         end
       else
-        inInv:transferSlotToSide(trashInv.side, stack.size, i, 1)
+        inInv:transferSlotToSide(trashInv.side, stack.size, i, -1)
       end
     end
   end

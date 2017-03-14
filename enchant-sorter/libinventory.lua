@@ -1,10 +1,12 @@
 local Inventory = {}
+
 Inventory.__index = Inventory
+
 setmetatable(Inventory, {
-  __call = function (cls, ...)
-    return cls:new(...)
-  end,
-})
+    __call = function (cls, ...)
+      return cls:new(...)
+    end,
+  })
 
 function Inventory:new(controller, side)
   local o = {
@@ -32,9 +34,8 @@ function Inventory:transferSlotToSide(...)
 end
 
 function Inventory:getNextFreeSlot()
-  local slot = self.freeSlot
-  for i=1,self:size() do
-    if slot > self:size() then slot = 1 end
+  local slot = self.freeSlot >= self:size() and self.freeSlot or 1
+  while slot <= self:size() do
     if self:getStackSizeInSlot(slot) == 0 then
       self.freeSlot = slot
       return self.freeSlot
