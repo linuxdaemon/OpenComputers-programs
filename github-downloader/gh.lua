@@ -251,8 +251,8 @@ local function clone()
   if #args > 1 then
     dir = args[2]
   else
-    local i = repo:find("/")
-    dir = repo:sub(i+1)
+    local i = remote:find("/")
+    dir = remote:sub(i+1)
   end
   workingDir = shell.resolve(dir)
   if fs.exists(workingDir) then
