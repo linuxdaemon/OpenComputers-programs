@@ -1,4 +1,3 @@
--- local JSON = require("JSON")
 local JSON = nil
 local component = require("component")
 local fs = require("filesystem")
@@ -19,6 +18,11 @@ local args = {...}
 local rateLimit = {
   remaining = 1
 }
+
+local function error_exit(...)
+  io.stderr:write(..., "\n")
+  os.exit(1)
+end
 
 local function readReq(req)
   local data = ""
@@ -158,8 +162,7 @@ end
 
 local function apiReq(path)
   if rateLimit.remaining < 1 then
-    io.stderr:write("No requests remaining,\nLimnit resets at " .. tostring(rateLimit.reset) .. " unix epoch time (UTC)\n")
-    os.exit(1)
+    error_exit("No requests remaining,\nLimnit resets at ", rateLimit.reset, " unix epoch time (UTC)")
   end
   local req = inet.request(API_URL..path, nil, BASE_HEADERS)
   local res, msg, headers, resp = readReq(req)
@@ -207,8 +210,7 @@ local function update()
   local gitdir = fs.concat(workingDir, ".git")
   while not fs.exists(gitdir) do
     if workingDir == "/" then
-      io.stderr:write("This does not appear to be a git repository")
-      os.exit(1)
+      error_exit("This does not appear to be a git repository")
     end
     workingDir = shell.resolve(fs.concat(workingDir, ".."))
     gitdir = fs.concat(workingDir, ".git")
@@ -216,8 +218,7 @@ local function update()
   local remoteFile = fs.concat(gitdir, "remote")
   local commitFile = fs.concat(gitdir, "commit")
   if not fs.exists(remoteFile) and fs.exists(commitFile) then
-    io.stderr:write("Repository information appears incomplete")
-    os.exit(1)
+    error_exit("Repository information appears incomplete")
   end
   local remote = readFile(remoteFile):gsub("[\n]+$", "")
   local lastCommit = readFile(commitFile):gsub("[\n]+$", "")
@@ -257,8 +258,7 @@ local function clone()
   end
   local workingDir = shell.resolve(dir)
   if fs.exists(workingDir) then
-    io.stderr:write("Directory exists, not cloning\n")
-    os.exit(1)
+    error_exit("Directory exists, not cloning")
   end
   local gitdir = fs.concat(workingDir, ".git")
   fs.makeDirectory(gitdir)
