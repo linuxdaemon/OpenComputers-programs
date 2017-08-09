@@ -61,6 +61,10 @@ end
 
 local function interrupt()
   local res, err = dialer.interrupt(getTransmitter().position)
+  if not res then
+    atExit()
+    error(err)
+  end
   if not bh then
     return
   end
@@ -69,10 +73,6 @@ local function interrupt()
       btn.selected = false
       bh:draw(btn)
     end
-  end
-  if not res then
-    atExit()
-    error(err)
   end
 end
 
