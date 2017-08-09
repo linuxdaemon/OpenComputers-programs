@@ -61,6 +61,9 @@ end
 
 local function interrupt()
   local res, err = dialer.interrupt(getTransmitter().position)
+  if not bh then
+    return
+  end
   for _, btn in pairs(bh.buttons) do
     if btn.selected then
       btn.selected = false
@@ -68,7 +71,7 @@ local function interrupt()
     end
   end
   if not res then
-    atExit(bh)
+    atExit()
     error(err)
   end
 end
@@ -76,7 +79,7 @@ end
 local function dial(receiver)
   local res, err = dialer.dial(getTx().position, receiver.position, receiver.dimension, false)
   if not res then
-    atExit(bh)
+    atExit()
     error(err)
   end
 end
