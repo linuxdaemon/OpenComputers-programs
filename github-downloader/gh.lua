@@ -16,7 +16,6 @@ local BASE_HEADERS = {
 }
 
 local args = {...}
-local remote = nil
 local rateLimit = {
   remaining = 1
 }
@@ -199,7 +198,7 @@ local function checkRateLimit()
   rateLimit = json.resources.core
 end
 
-local function getCommits()
+local function getCommits(remote)
   return apiReq("/repos/"..remote.."/commits")
 end
 
@@ -220,9 +219,9 @@ local function update()
     io.stderr:write("Repository information appears incomplete")
     os.exit(1)
   end
-  remote = readFile(remoteFile):gsub("[\n]+$", "")
+  local remote = readFile(remoteFile):gsub("[\n]+$", "")
   local lastCommit = readFile(commitFile):gsub("[\n]+$", "")
-  local commits = getCommits()
+  local commits = getCommits(remote)
   local newestCommit = commits[1].sha
   local compare = apiReq("/repos/"..remote.."/compare/"..lastCommit.."..."..newestCommit)
   local files = compare.files
@@ -234,7 +233,7 @@ local function update()
         fs.makeDirectory(fs.concat(workingDir, dir))
       end
       print("Updating " .. path .. "...")
-      downloadRaw(path, file.raw_url)
+      downloadRaw(workingDir, path, file.raw_url)
     elseif file.status == "removed" then
       print("Deleting " .. path .. "...")
       fs.remove(fs.concat(workingDir, path))
@@ -248,7 +247,7 @@ local function clone()
     print("Please specify a GitHub repository in the form user/repo")
     os.exit(0)
   end
-  remote = args[1]
+  local remote = args[1]
   local dir
   if #args > 1 then
     dir = args[2]
@@ -264,7 +263,7 @@ local function clone()
   local gitdir = fs.concat(workingDir, ".git")
   fs.makeDirectory(gitdir)
   writeFile(fs.concat(gitdir, "remote"), remote)
-  local commits = getCommits()
+  local commits = getCommits(remote)
   local commit = commits[1]
   writeFile(fs.concat(gitdir, "commit"), commit.sha)
   local url = commit.commit.tree.url.."?recursive=1"
@@ -273,7 +272,7 @@ local function clone()
   for _, obj in ipairs(treejson.tree) do
     if obj.type == "blob" then
       print("Downloading: " .. obj.path)
-      downloadBlob(obj.path, obj.url)
+      downloadBlob(workingDir, obj.path, obj.url)
     else
       fs.makeDirectory(fs.concat(workingDir, obj.path))
     end
