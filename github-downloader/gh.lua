@@ -17,10 +17,8 @@ local BASE_HEADERS = {
 
 local args = {...}
 local remote = nil
-local workingDir = nil
-local gitdir = nil
 local rateLimit = {
-  remaining=1
+  remaining = 1
 }
 
 local function readReq(req)
@@ -179,18 +177,18 @@ local function apiReq(path)
   return JSON:decode(resp)
 end
 
-local function downloadRaw(path, url)
-  downloadFile(url, fs.concat(workingDir, path))
+local function downloadRaw(base_dir, path, url)
+  downloadFile(url, fs.concat(base_dir, path))
 end
 
-local function downloadBlob(path, from)
+local function downloadBlob(base_dir, path, from)
   local blobreq = inet.request(from, nil, BASE_HEADERS)
   local res, msg, headers, resp = readReq(blobreq)
   if not(res == 200) then
     error(res.." "..msg)
   end
   local blobjson = JSON:decode(resp)
-  local f = io.open(fs.concat(workingDir, path), "w")
+  local f = io.open(fs.concat(base_dir, path), "w")
   local s = data.decode64(blobjson.content)
   f:write(s)
   f:close()
@@ -206,11 +204,15 @@ local function getCommits()
 end
 
 local function update()
-  workingDir = shell.resolve(".")
-  gitdir = fs.concat(workingDir, ".git")
-  if not fs.exists(gitdir) then
-    io.stderr:write("This does not appear to be a git repository")
-    os.exit(1)
+  local workingDir = shell.resolve(".")
+  local gitdir = fs.concat(workingDir, ".git")
+  while not fs.exists(gitdir) do
+    if workingDir == "/" then
+      io.stderr:write("This does not appear to be a git repository")
+      os.exit(1)
+    end
+    workingDir = shell.resolve(fs.concat(workingDir, ".."))
+    gitdir = fs.concat(workingDir, ".git")
   end
   local remoteFile = fs.concat(gitdir, "remote")
   local commitFile = fs.concat(gitdir, "commit")
@@ -254,12 +256,12 @@ local function clone()
     local i = remote:find("/")
     dir = remote:sub(i+1)
   end
-  workingDir = shell.resolve(dir)
+  local workingDir = shell.resolve(dir)
   if fs.exists(workingDir) then
     io.stderr:write("Directory exists, not cloning\n")
     os.exit(1)
   end
-  gitdir = fs.concat(workingDir, ".git")
+  local gitdir = fs.concat(workingDir, ".git")
   fs.makeDirectory(gitdir)
   writeFile(fs.concat(gitdir, "remote"), remote)
   local commits = getCommits()
@@ -268,7 +270,7 @@ local function clone()
   local url = commit.commit.tree.url.."?recursive=1"
   url = url:gsub("^https?://[^/]+", "")
   local treejson = apiReq(url)
-  for _,obj in ipairs(treejson.tree) do
+  for _, obj in ipairs(treejson.tree) do
     if obj.type == "blob" then
       print("Downloading: " .. obj.path)
       downloadBlob(obj.path, obj.url)
