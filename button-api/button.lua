@@ -67,11 +67,6 @@ function ButtonHandler:register(button)
   self.buttons[button.id] = button
 end
 
-function ButtonHandler:start()
-  self.active = true
-  event.listen("touch", function (...) return self:handler(...) end)
-end
-
 function ButtonHandler:running()
   return self.active
 end
@@ -144,6 +139,12 @@ function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
   end
 end
 
+function ButtonHandler:loop()
+  self.active = true
+  while self.active do
+    self:handler(event.pull("touch"))
+  end
+end
 
 
 return {

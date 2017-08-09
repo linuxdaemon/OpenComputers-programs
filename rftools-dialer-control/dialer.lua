@@ -2,35 +2,22 @@ local component = require("component")
 local computer = require("computer")
 local event = require("event")
 local term = require("term")
+local thread = require("thread")
 local button = require("button")
 
-local dialer = component.rftools_dialing_device
-local gpu = component.gpu
+local dialer = component.getPrimary("rftools_dialing_device")
+local gpu = component.getPrimary("gpu")
 
 local receivers = {}
 
-local caughtInterrupt = false
-local startingScreen = gpu.getScreen()
-local btnScreen = nil
 local bh = nil
 
 local function log(line)
-  gpu.bind(startingScreen)
   print(line)
-  if btnScreen then gpu.bind(btnScreen.address) end
 end
 
-local function getTx()
+local function getTransmitter()
   return dialer.getTransmitters()[1]
-end
-
-local function getButtonScreen()
-  for screen in component.list('screen', true) do
-    if #component.invoke(screen, "getKeyboards") == 0 then
-      btnScreen = component.proxy(screen)
-      return btnScreen
-    end
-  end
 end
 
 local function alignResolution()
@@ -60,30 +47,28 @@ local function clearScreens()
   gpu.bind(oldScreen)
 end
 
-local function loadRx()
+local function loadReceivers()
   receivers = {}
-  for _,rx in ipairs(dialer.getReceivers()) do
+  for _, rx in ipairs(dialer.getReceivers()) do
     receivers[#receivers + 1] = rx
   end
 end
 
 local function atExit()
   if bh and bh:running() then bh:stop() end
-  gpu.bind(btnScreen.address)
   term.clear()
-  gpu.bind(startingScreen)
 end
 
 local function interrupt()
-  local res, err = dialer.interrupt(getTx().position)
-  for _,btn in pairs(bh.buttons) do
+  local res, err = dialer.interrupt(getTransmitter().position)
+  for _, btn in pairs(bh.buttons) do
     if btn.selected then
       btn.selected = false
       bh:draw(btn)
     end
   end
   if not res then
-    atExit()
+    atExit(bh)
     error(err)
   end
 end
@@ -91,7 +76,7 @@ end
 local function dial(receiver)
   local res, err = dialer.dial(getTx().position, receiver.position, receiver.dimension, false)
   if not res then
-    atExit()
+    atExit(bh)
     error(err)
   end
 end
@@ -114,8 +99,10 @@ local function drawButtons()
   term.clear()
   local longest = 5
   local maxLen = 25
-  for _,rx in ipairs(receivers) do
-    if rx.name:len() > longest then longest = rx.name:len() end
+  for _, rx in ipairs(receivers) do
+    if rx.name:len() > longest then
+      longest = rx.name:len()
+    end
   end
   longest = longest < maxLen and longest or maxLen
   if bh then
@@ -152,38 +139,46 @@ end
 
 reload = function()
   interrupt()
-  loadRx()
+  loadReceivers()
   drawButtons()
 end
 
-local function interruptHandler()
-  atExit()
+local function interruptHandler(bh)
+  atExit(bh)
   os.exit(0)
 end
 
-local function registerInterruptHandler()
-  event.listen("interrupted", interruptHandler)
-end
-
-local function mainLoop()
-  bh.active = true
-  while true do
-    local id, screen, x, y, mBtn, user = event.pullMultiple("interrupted", "touch")
-    if id == "interrupted" then
-      interruptHandler()
-    elseif id == "touch" then
-      bh:handler(id, screen, x, y, mBtn, user)
-    end
+local function error_wrap(func, ...)
+  local result = {xpcall(func, debug.traceback, ...)}
+  if not result[1] then
+    io.stderr:write(result[2], '\n')
+  else
+    return table.unpack(result, 3, #result)
   end
 end
 
 local function main()
-  getButtonScreen()
-  gpu.bind(btnScreen.address)
   clearScreens()
-  loadRx()
-  drawButtons()
-  mainLoop()
+  reload()
+  bh:loop()
 end
 
-main()
+local function shutdown()
+  event.pull("interrupted")
+  atExit()
+end
+
+local function run()
+  local funcs = {
+    shutdown,
+    main,
+  }
+  local threads = {}
+  for _, func in ipairs(funcs) do
+    threads[#threads + 1] = thread.create(error_wrap, func)
+  end
+  thread.waitForAny(threads)
+  os.exit(0)
+end
+
+run()
