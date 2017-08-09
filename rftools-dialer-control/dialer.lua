@@ -77,7 +77,8 @@ local function interrupt()
 end
 
 local function dial(receiver)
-  local res, err = dialer.dial(getTx().position, receiver.position, receiver.dimension, false)
+  local tx = getTransmitter()
+  local res, err = dialer.dial(tx.position, receiver.position, receiver.dimension, false)
   if not res then
     atExit()
     error(err)
