@@ -4,7 +4,7 @@ local class = require("class")
 local matter_receiver = class("matter_receiver")
 
 matter_receiver:add_readonly_property("dialer", {})
-matter_receiver:add_variable("raw_tbl", {})
+matter_receiver:add_readonly_property("raw_tbl", {})
 
 matter_receiver:add_constructor({"dialing_device", "table"}, function(self, dialer, tbl)
   self.privates.dialer = dialer
