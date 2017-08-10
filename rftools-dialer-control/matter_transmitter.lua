@@ -6,7 +6,7 @@ local matter_transmitter = class("matter_transmitter")
 matter_transmitter:add_readonly_property("dialer", {})
 matter_transmitter:add_variable("raw_tbl", {})
 
-matter_transmitter:add_constructor({"table", "table"}, function(self, dialer, tbl)
+matter_transmitter:add_constructor({"dialing_device", "table"}, function(self, dialer, tbl)
   self.privates.dialer = dialer
   self.privates.raw_tbl = tbl
 end)
