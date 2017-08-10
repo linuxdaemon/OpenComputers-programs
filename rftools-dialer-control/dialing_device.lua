@@ -56,7 +56,7 @@ end)
 
 dialing_device:add_method("interrupt", function(self, transmitter)
   transmitter = transmitter or self.default_transmitter
-  return self.component.interrupt(transmitter)
+  return self.component.interrupt(transmitter.position)
 end)
 
 return dialing_device
