@@ -97,7 +97,7 @@ local function draw_buttons()
   end
 
   if bh then
-    bh:clear()
+    bh:clear_buttons()
   else
     bh = button_handler(gpu)
   end
