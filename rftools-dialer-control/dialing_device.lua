@@ -1,7 +1,7 @@
 -- lua-objects
 local class = require("class")
 local matter_transmitter = require("matter_transmitter")
-local matter_receiver = require "matter_receiver"
+local matter_receiver = require("matter_receiver")
 
 local dialing_device = class("dialing_device")
 
@@ -31,18 +31,7 @@ dialing_device:add_getter("receivers", function(self)
   return receivers
 end)
 
-dialing_device:add_method("dial", function(self, transmitter, receiver, once)
-  if receiver == nil or type(receiver) == "boolean" then
-    -- Shift all parameters and set the transmitter to the default
-    once = receiver
-    receiver = transmitter
-    transmitter = self.default_transmitter
-  end
-  if not transmitter then
-    error("Transmitter can not be nil")
-  elseif not receiver then
-    error("Receiver can not be nil")
-  end
+dialing_device:add_overloaded_method("dial", {"transmitter", "receiver", "boolean"}, function(self, transmitter, receiver, once)
   if once then
     return self.component.dial(transmitter.position, receiver.position, receiver.dimension, once)
   else
@@ -50,18 +39,32 @@ dialing_device:add_method("dial", function(self, transmitter, receiver, once)
   end
 end)
 
-dialing_device:add_method("dial_once", function(self, transmitter, receiver)
-  if receiver == nil then
-    -- Shift all parameters and set the transmitter to the default
-    receiver = transmitter
-    transmitter = self.default_transmitter
-  end
+dialing_device:add_overloaded_method("dial", {"transmitter", "receiver"}, function(self, transmitter, receiver)
+  return self:dial(transmitter, receiver, false)
+end)
+
+dialing_device:add_overloaded_method("dial", {"receiver", "boolean"}, function(self, receiver, once)
+  return self:dial(self.default_transmitter, receiver, once)
+end)
+
+dialing_device:add_overloaded_method("dial", {"receiver"}, function(self, receiver)
+  return self:dial(self.default_transmitter, receiver)
+end)
+
+dialing_device:add_overloaded_method("dial_once", {"transmitter", "receiver"}, function(self, transmitter, receiver)
   return self:dial(transmitter, receiver, true)
 end)
 
-dialing_device:add_method("interrupt", function(self, transmitter)
-  transmitter = transmitter or self.default_transmitter
+dialing_device:add_overloaded_method("dial_once", {"receiver"}, function(self, receiver)
+  return self:dial(self.default_transmitter, receiver, true)
+end)
+
+dialing_device:add_overloaded_method("interrupt", {"transmitter"}, function(self, transmitter)
   return self.component.interrupt(transmitter.position)
+end)
+
+dialing_device:add_overloaded_method("interrupt", {}, function(self)
+  return self:interrupt(self.default_transmitter)
 end)
 
 return dialing_device
