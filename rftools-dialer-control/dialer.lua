@@ -19,7 +19,7 @@ local function log(line)
   print(line)
 end
 
-local function alignResolution()
+local function align_resolution()
   local sizeRatio = 1
   local screen = component.proxy(gpu.getScreen())
   local w, h = gpu.maxResolution()
@@ -36,7 +36,7 @@ local function alignResolution()
   end
 end
 
-local function clearScreens()
+local function clear_screens()
   local oldScreen = gpu.getScreen()
   for screen in component.list('screen', true) do
     gpu.bind(screen)
@@ -46,14 +46,14 @@ local function clearScreens()
   gpu.bind(oldScreen)
 end
 
-local function loadReceivers()
+local function load_receivers()
   receivers = {}
   for _, rx in ipairs(dialer.receivers) do
     receivers[#receivers + 1] = rx
   end
 end
 
-local function atExit()
+local function at_exit()
   if bh and bh:running() then bh:stop() end
   term.clear()
 end
@@ -61,7 +61,7 @@ end
 local function interrupt()
   local res, err = dialer:interrupt()
   if not res then
-    atExit()
+    at_exit()
     error(err)
   end
   if bh then
@@ -72,7 +72,7 @@ end
 local function dial(receiver)
   local res, err = dialer:dial_once(receiver)
   if not res then
-    atExit()
+    at_exit()
     error(err)
   end
 end
@@ -89,9 +89,9 @@ end
 
 local reload -- forward declaration for buttons
 
-local function drawButtons()
+local function draw_buttons()
   log("Drawing buttons")
-  alignResolution()
+  align_resolution()
   term.clear()
   local longest = 5
   local maxLen = 25
@@ -127,13 +127,13 @@ local function drawButtons()
   local reload_button = bh:add_button(1, scHeight - 3, reloadButtonTxt:len() + 2, 3, reload, reloadButtonTxt)
   local intButtonTxt = "Interrupt"
   local int_button = bh:add_button(scWidth - (intButtonTxt:len()+2), scHeight - 3, intButtonTxt:len() + 2, 3, interrupt, intButtonTxt)
-  bh:drawAll()
+  bh:draw_all()
 end
 
 reload = function()
   interrupt()
-  loadReceivers()
-  drawButtons()
+  load_receivers()
+  draw_buttons()
 end
 
 local function error_wrap(func, ...)
@@ -146,14 +146,14 @@ local function error_wrap(func, ...)
 end
 
 local function main()
-  clearScreens()
+  clear_screens()
   reload()
   bh:loop()
 end
 
 local function shutdown()
   event.pull("interrupted")
-  atExit()
+  at_exit()
 end
 
 local function run()
