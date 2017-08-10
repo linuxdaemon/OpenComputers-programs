@@ -1,3 +1,4 @@
+local event = require("event")
 -- lua-objects
 local class = require("class")
 
