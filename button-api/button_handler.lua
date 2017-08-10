@@ -40,7 +40,7 @@ button_handler:add_method("handle_touch", function(self, screen, x, y, mouse_but
         (btn.y <= y) and (y <= btn.y + btn.height) then
       if btn.is_toggleable then
         for _, b in pairs(self.privates.buttons) do
-          if b.selected then
+          if b.selected and btn.id ~= b.id then
             b:unselect()
             self:draw(b)
           end
