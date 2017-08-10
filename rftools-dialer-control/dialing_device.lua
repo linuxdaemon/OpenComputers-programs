@@ -24,7 +24,7 @@ dialing_device:add_getter("default_transmitter", function(self)
 end)
 
 dialing_device:add_getter("receivers", function(self)
-  local receivers = self.component.getTransmitters()
+  local receivers = self.component.getReceivers()
   for i, receiver in ipairs(receivers) do
     receivers[i] = matter_transmitter(self, receiver)
   end
