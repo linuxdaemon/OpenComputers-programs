@@ -88,7 +88,8 @@ button_handler:add_method("draw_all", function(self)
 end)
 
 button_handler:add_method("clear_screen", function(self)
-  self.gpu.fill(1, 1, self.gpu.getResolution(), " ")
+  local w, h = self.gpu.getResolution()
+  self.gpu.fill(1, 1, w, h, " ")
 end)
 
 button_handler:add_method("clear_buttons", function(self)
