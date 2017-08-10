@@ -45,7 +45,7 @@ local function clear_screens()
 end
 
 local function at_exit()
-  if bh and bh:running() then bh:stop() end
+  if bh and bh.active then bh:stop() end
   term.clear()
 end
 
