@@ -38,6 +38,11 @@ dialing_device:add_method("dial", function(self, transmitter, receiver, once)
     receiver = transmitter
     transmitter = self.default_transmitter
   end
+  if not transmitter then
+    error("Transmitter can not be nil")
+  elseif not receiver then
+    error("Receiver can not be nil")
+  end
   if once then
     return self.component.dial(transmitter.position, receiver.position, receiver.dimension, once)
   else
