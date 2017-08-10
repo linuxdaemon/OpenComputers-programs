@@ -56,7 +56,7 @@ dialing_device:add_overloaded_method("dial_once", {"matter_transmitter", "matter
 end)
 
 dialing_device:add_overloaded_method("dial_once", {"matter_receiver"}, function(self, receiver)
-  return self:dial(self.default_transmitter, receiver, true)
+  return self:dial_once(self.default_transmitter, receiver)
 end)
 
 dialing_device:add_overloaded_method("interrupt", {"matter_transmitter"}, function(self, transmitter)
