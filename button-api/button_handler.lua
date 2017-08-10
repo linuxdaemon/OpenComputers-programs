@@ -58,8 +58,8 @@ end)
 button_handler:add_method("draw", function(self, btn)
   local oldFG, oldBG
   if btn.selected then
-    oldFG = self.gpu.setForeground(btn.sForeground)
-    oldBG = self.gpu.setBackground(btn.sBackground)
+    oldFG = self.gpu.setForeground(btn.alt_foreground)
+    oldBG = self.gpu.setBackground(btn.alt_background)
   else
     oldFG = self.gpu.setForeground(btn.foreground)
     oldBG = self.gpu.setBackground(btn.background)
