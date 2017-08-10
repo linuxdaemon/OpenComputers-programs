@@ -40,7 +40,7 @@ button_handler:add_method("handle_touch", function(self, screen, x, y, mouse_but
         (btn.y <= y) and (y <= btn.y + btn.height) then
       if btn.is_toggleable then
         for _, b in pairs(self.privates.buttons) do
-          if b.selected and not b.id == btn.id then
+          if b.selected then
             b:unselect()
             self:draw(b)
           end
@@ -51,6 +51,7 @@ button_handler:add_method("handle_touch", function(self, screen, x, y, mouse_but
       else
         self:flash_button(btn, nil, true)
       end
+      break
     end
   end
 end)
