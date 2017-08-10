@@ -34,11 +34,11 @@ button_handler:add_method("handle_touch", function(self, screen, x, y, mouse_but
   if not self.active then
     return false
   end
-  for _, btn in pairs(self.buttons) do
+  for _, btn in pairs(self.privates.buttons) do
     if (btn.x <= x) and (x <= btn.x + btn.width) and
         (btn.y <= y) and (y <= btn.y + btn.height) then
       if btn.is_toggleable then
-        for _, b in pairs(self.buttons) do
+        for _, b in pairs(self.privates.buttons) do
           if b.selected and not b.id == btn.id then
             b:unselect()
             self:draw(b)
@@ -82,7 +82,7 @@ end)
 
 button_handler:add_method("draw_all", function(self)
   self:clear_screen()
-  for _, btn in pairs(self.buttons) do
+  for _, btn in pairs(self.privates.buttons) do
     self:draw(btn)
   end
 end)
@@ -103,7 +103,7 @@ button_handler:add_method("add_button", function(self, ...)
 end)
 
 button_handler:add_method("reset", function(self)
-  for _, btn in pairs(self.buttons) do
+  for _, btn in pairs(self.privates.buttons) do
     if btn.selected then
       btn:unselect()
       self:draw(btn)
