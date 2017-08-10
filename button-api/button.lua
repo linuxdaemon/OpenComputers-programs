@@ -41,6 +41,7 @@ button:add_readonly_property("background", 0x0000FF)
 button:add_readonly_property("alt_foreground", 0xFFFFFF)
 button:add_readonly_property("alt_background", 0xA0A0A0)
 button:add_readonly_property("text_align", "center")
+button:add_readonly_property("callback", function() end)
 
 button:add_property("is_toggleable", false)
 
@@ -51,6 +52,7 @@ button:add_constructor({"number", "number", "number", "number", "function", "str
   self.privates.size.height = height
   self.privates.text = text
   self.privates.id = uuid.next()
+  self.privates.callback = callback
 end)
 
 button:add_method("select", function(self)
