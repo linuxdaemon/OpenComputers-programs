@@ -11,8 +11,6 @@ local dialing_device = require("dialing_device")
 local dialer = dialing_device(component.getPrimary("rftools_dialing_device"))
 local gpu = component.getPrimary("gpu")
 
-local receivers = {}
-
 local bh = nil
 
 local function log(line)
@@ -20,7 +18,7 @@ local function log(line)
 end
 
 local function align_resolution()
-  local sizeRatio = 1
+  local size_ratio = 1
   local screen = component.proxy(gpu.getScreen())
   local w, h = gpu.maxResolution()
   w = w / 2
@@ -28,29 +26,22 @@ local function align_resolution()
   local ratio = a / b
   local inverse = math.pow(ratio, -1)
   if (h * ratio) <= w then
-    gpu.setResolution(((h * ratio)*2)/sizeRatio, h/sizeRatio)
+    gpu.setResolution(((h * ratio) * 2) / size_ratio, h / size_ratio)
   elseif (w * inverse) <= h then
-    gpu.setResolution((w*2)/sizeRatio, (w * inverse)/sizeRatio)
+    gpu.setResolution((w * 2) / size_ratio, (w * inverse) / size_ratio)
   else
     error("Error setting resolution")
   end
 end
 
 local function clear_screens()
-  local oldScreen = gpu.getScreen()
+  local old_screen = gpu.getScreen()
   for screen in component.list('screen', true) do
     gpu.bind(screen)
     local w, h = gpu.getResolution()
     gpu.fill(1, 1, w, h, " ")
   end
-  gpu.bind(oldScreen)
-end
-
-local function load_receivers()
-  receivers = {}
-  for _, rx in ipairs(dialer.receivers) do
-    receivers[#receivers + 1] = rx
-  end
+  gpu.bind(old_screen)
 end
 
 local function at_exit()
@@ -94,45 +85,49 @@ local function draw_buttons()
   align_resolution()
   term.clear()
   local longest = 5
-  local maxLen = 25
-  for _, rx in ipairs(receivers) do
+  local max_len = 25
+  for _, rx in ipairs(dialer.receivers) do
     if rx.name:len() > longest then
       longest = rx.name:len()
     end
   end
-  longest = longest < maxLen and longest or maxLen
+
+  if longest > max_len then
+    longest = max_len
+  end
+
   if bh then
     bh:clear()
+  else
+    bh = button_handler(gpu)
   end
-  bh = bh or button_handler(gpu)
 
-  local scWidth, scHeight = gpu.getResolution()
-  local scHeight = scHeight - 2
-  local columnWidth = longest + 4
-  local rowHeight = 5
+  local sc_width, sc_height = gpu.getResolution()
+  sc_height = sc_height - 2
+  local column_width = longest + 4
+  local row_height = 5
   local x, y = 1, 1
-  for _, rx in ipairs(receivers) do
-    if x > (scWidth - columnWidth) then
+  for _, rx in ipairs(dialer.receivers) do
+    if x > (sc_width - column_width) then
       x = 1
-      y = y + rowHeight
+      y = y + row_height
     end
-    if y > (scHeight - rowHeight) then
+    if y > (sc_height - row_height) then
       error("Screen size maxed: " .. tostring(x) .. " " .. tostring(y))
     end
-    local new_button = bh:add_button(x + 1, y + 1, columnWidth - 2, rowHeight - 2, dialCBGen(rx), rx.name:sub(1, longest))
+    local new_button = bh:add_button(x + 1, y + 1, column_width - 2, row_height - 2, dialCBGen(rx), rx.name:sub(1, longest))
     new_button.is_toggleable = true
-    x = x + columnWidth
+    x = x + column_width
   end
-  local reloadButtonTxt = "Reload"
-  local reload_button = bh:add_button(1, scHeight - 3, reloadButtonTxt:len() + 2, 3, reload, reloadButtonTxt)
-  local intButtonTxt = "Interrupt"
-  local int_button = bh:add_button(scWidth - (intButtonTxt:len()+2), scHeight - 3, intButtonTxt:len() + 2, 3, interrupt, intButtonTxt)
+  local reload_button_txt = "Reload"
+  local reload_button = bh:add_button(1, sc_height - 3, reload_button_txt:len() + 2, 3, reload, reload_button_txt)
+  local int_button_txt = "Interrupt"
+  local int_button = bh:add_button(sc_width - (int_button_txt:len()+2), sc_height - 3, int_button_txt:len() + 2, 3, interrupt, int_button_txt)
   bh:draw_all()
 end
 
 reload = function()
   interrupt()
-  load_receivers()
   draw_buttons()
 end
 
