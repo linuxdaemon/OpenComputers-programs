@@ -65,9 +65,9 @@ button:add_method("toggle", function(self)
   self.privates.selected = not self.privates.selected
 end)
 
-button:add_getter("width", function(self) return self.size.width end)
-button:add_getter("height", function(self) return self.size.height end)
-button:add_getter("x", function(self) return self.position.x end)
-button:add_getter("y", function(self) return self.position.y end)
+button:add_getter("width", function(self) return self.privates.size.width end)
+button:add_getter("height", function(self) return self.privates.size.height end)
+button:add_getter("x", function(self) return self.privates.position.x end)
+button:add_getter("y", function(self) return self.privates.position.y end)
 
 return button
