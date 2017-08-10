@@ -1,4 +1,5 @@
-local class = require("lua-objects/class")
+-- lua-objects
+local class = require("class")
 local matter_transmitter = require("matter_transmitter")
 local matter_receiver = require "matter_receiver"
 

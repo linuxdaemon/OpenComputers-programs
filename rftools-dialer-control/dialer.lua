@@ -4,7 +4,8 @@ local event = require("event")
 local term = require("term")
 local thread = require("thread")
 
-local button_handler = require("button-api/button_handler")
+-- Button API
+local button_handler = require("button_handler")
 local dialing_device = require("dialing_device")
 
 local dialer = dialing_device(component.getPrimary("rftools_dialing_device"))

@@ -1,4 +1,4 @@
-local class = require("lua-objects/class")
+local class = require("class")
 
 local matter_receiver = class("matter_receiver")
 

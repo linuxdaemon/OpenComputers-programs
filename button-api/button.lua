@@ -2,7 +2,9 @@ local uuid = require("uuid")
 local event = require("event")
 local computer = require("computer")
 local component = require("component")
-local class = require("lua-objects/class")
+
+-- lua-objects
+local class = require("class")
 
 local gpu = component.getPrimary("gpu")
 
