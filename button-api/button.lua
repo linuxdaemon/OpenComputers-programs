@@ -2,24 +2,13 @@ local uuid = require("uuid")
 local event = require("event")
 local computer = require("computer")
 local component = require("component")
+local class = require("lua-objects/class")
 
 local gpu = component.getPrimary("gpu")
 
-local Button = {}
-Button.__index = Button
-setmetatable(Button, {
-  __call = function (cls, ...)
-    return cls:new(...)
-  end,
-})
+local button = class("button")
 
-local ButtonHandler = {}
-ButtonHandler.__index = ButtonHandler
-setmetatable(ButtonHandler, {
-  __call = function (cls, ...)
-    return cls:new(...)
-  end,
-})
+local button_handler = class("button_handler")
 
 local function centerStr(s, len)
   local i = len - s:len()
@@ -31,123 +20,47 @@ local function centerStr(s, len)
   return string.rep(" ", pre) .. s
 end
 
-function Button:new(x, y, width, height, callback, text, toggleable)
-  checkArg(1, x, "number")
-  checkArg(2, y, "number")
-  checkArg(3, width, "number")
-  checkArg(4, height, "number")
-  local o = {
-    x=x,
-    y=y,
-    width=width,
-    height=height,
-    callback=callback,
-    text=text,
-    selected=false,
-    toggle=toggleable or false,
-    id=uuid.next(),
-    foreground=0xFFFFFF,
-    background=0x0000FF,
-    sForeground=0xFFFFFF,
-    sBackground=0xA0A0A0,
-    text_align="center",
-    border=1
-  }
-  return setmetatable(o, self)
-end
+button:add_variable("position", {
+  x = -1,
+  y = -1,
+})
 
-function ButtonHandler:new()
-  return setmetatable({buttons={}, active=false}, self)
-end
+button:add_variable("size", {
+  width = -1,
+  height = -1,
+})
 
-function ButtonHandler:register(button)
-  if not(self.buttons[button.id] == nil) then
-    error("Attempted to register button with conflicting ID")
-  end
-  self.buttons[button.id] = button
-end
+button:add_readonly_property("text", "")
+button:add_readonly_property("id", "")
+button:add_readonly_property("border", 1)
+button:add_readonly_property("selected", false)
+button:add_readonly_property("foreground", 0xFFFFFF)
+button:add_readonly_property("background", 0x0000FF)
+button:add_readonly_property("alt_foreground", 0xFFFFFF)
+button:add_readonly_property("alt_background", 0xA0A0A0)
+button:add_readonly_property("text_align", "center")
 
-function ButtonHandler:running()
-  return self.active
-end
+button:add_property("is_toggleable", false)
 
-function ButtonHandler:stop()
-  self.active = false
-end
+button:add_constructor({"number", "number", "number", "number", "function", "string"}, function(self, x, y, width, height, callback, text)
+  self.privates.position.x = x
+  self.privates.position.y = y
+  self.privates.size.width = width
+  self.privates.size.height = height
+  self.privates.text = text
+  self.privates.id = uuid.next()
+end)
 
-function ButtonHandler:draw(button)
-  local oldFG, oldBG
-  if button.selected then
-    oldFG = gpu.setForeground(button.sForeground)
-    oldBG = gpu.setBackground(button.sBackground)
-  else
-    oldFG = gpu.setForeground(button.foreground)
-    oldBG = gpu.setBackground(button.background)
-  end
-  gpu.fill(button.x, button.y, button.width, button.height, " ")
-  gpu.set(button.x+button.border, button.y+button.border, centerStr(button.text, button.width - 2))
-  gpu.setBackground(oldBG)
-  gpu.setForeground(oldFG)
-end
+button:add_method("select", function(self)
+  self.privates.selected = true
+end)
 
-function ButtonHandler:flashButton(button, time)
-  button.selected = true
-  self:draw(button)
-  os.sleep(time)
-  button.selected = false
-  self:draw(button)
-end
+button:add_method("unselect", function(self)
+  self.privates.selected = false
+end)
 
-function ButtonHandler:drawAll()
-  local w, h = gpu.getResolution()
-  gpu.fill(1, 1, w, h, " ")
-  for _,btn in pairs(self.buttons) do
-    self:draw(btn)
-  end
-end
+button:add_method("toggle", function(self)
+  self.privates.selected = not self.privates.selected
+end)
 
-function ButtonHandler:clear()
-  self.buttons = {}
-end
-
-function ButtonHandler:handler(eType, screen, x, y, mBtn, user)
-  if not self.active then
-    return false
-  end
-  for _,btn in pairs(self.buttons) do
-    if (btn.x <= x) and (x <= btn.x+btn.width) then
-      if (btn.y <= y) and (y <= btn.y+btn.height) then
-        if btn.toggle then
-          for _,b in pairs(self.buttons) do
-            if b.selected and not(b.id == btn.id) then
-              b.selected = false
-              self:draw(b)
-            end
-          end
-          btn.selected = not btn.selected
-          self:draw(btn)
-          btn.callback(btn)
-        else
-          btn.selected = true
-          self:draw(btn)
-          btn.callback(btn)
-          btn.selected = false
-          self:draw(btn)
-        end
-      end
-    end
-  end
-end
-
-function ButtonHandler:loop()
-  self.active = true
-  while self.active do
-    self:handler(event.pull("touch"))
-  end
-end
-
-
-return {
-  Button=Button,
-  ButtonHandler=ButtonHandler
-}
+return button

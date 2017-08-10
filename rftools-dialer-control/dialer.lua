@@ -3,9 +3,11 @@ local computer = require("computer")
 local event = require("event")
 local term = require("term")
 local thread = require("thread")
-local button = require("button")
 
-local dialer = component.getPrimary("rftools_dialing_device")
+local button_handler = require("button-api/button_handler")
+local dialing_device = require("dialing_device")
+
+local dialer = dialing_device(component.getPrimary("rftools_dialing_device"))
 local gpu = component.getPrimary("gpu")
 
 local receivers = {}
@@ -14,10 +16,6 @@ local bh = nil
 
 local function log(line)
   print(line)
-end
-
-local function getTransmitter()
-  return dialer.getTransmitters()[1]
 end
 
 local function alignResolution()
@@ -49,7 +47,7 @@ end
 
 local function loadReceivers()
   receivers = {}
-  for _, rx in ipairs(dialer.getReceivers()) do
+  for _, rx in ipairs(dialer.receivers) do
     receivers[#receivers + 1] = rx
   end
 end
@@ -60,25 +58,18 @@ local function atExit()
 end
 
 local function interrupt()
-  local res, err = dialer.interrupt(getTransmitter().position)
+  local res, err = dialer:interrupt()
   if not res then
     atExit()
     error(err)
   end
-  if not bh then
-    return
-  end
-  for _, btn in pairs(bh.buttons) do
-    if btn.selected then
-      btn.selected = false
-      bh:draw(btn)
-    end
+  if bh then
+    bh:reset()
   end
 end
 
 local function dial(receiver)
-  local tx = getTransmitter()
-  local res, err = dialer.dial(tx.position, receiver.position, receiver.dimension, true)
+  local res, err = dialer:dial_once(receiver)
   if not res then
     atExit()
     error(err)
@@ -112,14 +103,14 @@ local function drawButtons()
   if bh then
     bh:clear()
   end
-  bh = bh or button.ButtonHandler()
+  bh = bh or button_handler(gpu)
 
   local scWidth, scHeight = gpu.getResolution()
   local scHeight = scHeight - 2
   local columnWidth = longest + 4
   local rowHeight = 5
   local x, y = 1, 1
-  for _,rx in ipairs(receivers) do
+  for _, rx in ipairs(receivers) do
     if x > (scWidth - columnWidth) then
       x = 1
       y = y + rowHeight
@@ -127,17 +118,14 @@ local function drawButtons()
     if y > (scHeight - rowHeight) then
       error("Screen size maxed: " .. tostring(x) .. " " .. tostring(y))
     end
-    bh:register(button.Button(x+1, y+1, columnWidth-2, rowHeight-2, dialCBGen(rx), rx.name:sub(1, longest), true))
+    local new_button = bh:add_button(x + 1, y + 1, columnWidth - 2, rowHeight - 2, dialCBGen(rx), rx.name:sub(1, longest))
+    new_button.is_toggleable = true
     x = x + columnWidth
   end
   local reloadButtonTxt = "Reload"
-  local reloadButton = button.Button(1, scHeight - 3, reloadButtonTxt:len() + 2, 3, reload, reloadButtonTxt)
-  reloadButton.border = 1
+  local reload_button = bh:add_button(1, scHeight - 3, reloadButtonTxt:len() + 2, 3, reload, reloadButtonTxt)
   local intButtonTxt = "Interrupt"
-  local intButton = button.Button(scWidth - (intButtonTxt:len()+2), scHeight - 3, intButtonTxt:len() + 2, 3, interrupt, intButtonTxt)
-  intButton.border = 1
-  bh:register(reloadButton)
-  bh:register(intButton)
+  local int_button = bh:add_button(scWidth - (intButtonTxt:len()+2), scHeight - 3, intButtonTxt:len() + 2, 3, interrupt, intButtonTxt)
   bh:drawAll()
 end
 
@@ -145,11 +133,6 @@ reload = function()
   interrupt()
   loadReceivers()
   drawButtons()
-end
-
-local function interruptHandler(bh)
-  atExit(bh)
-  os.exit(0)
 end
 
 local function error_wrap(func, ...)
