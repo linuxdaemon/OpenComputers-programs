@@ -31,7 +31,7 @@ dialing_device:add_getter("receivers", function(self)
   return receivers
 end)
 
-dialing_device:add_overloaded_method("dial", {"transmitter", "receiver", "boolean"}, function(self, transmitter, receiver, once)
+dialing_device:add_overloaded_method("dial", {"matter_transmitter", "matter_receiver", "boolean"}, function(self, transmitter, receiver, once)
   if once then
     return self.component.dial(transmitter.position, receiver.position, receiver.dimension, once)
   else
@@ -39,27 +39,27 @@ dialing_device:add_overloaded_method("dial", {"transmitter", "receiver", "boolea
   end
 end)
 
-dialing_device:add_overloaded_method("dial", {"transmitter", "receiver"}, function(self, transmitter, receiver)
+dialing_device:add_overloaded_method("dial", {"matter_transmitter", "matter_receiver"}, function(self, transmitter, receiver)
   return self:dial(transmitter, receiver, false)
 end)
 
-dialing_device:add_overloaded_method("dial", {"receiver", "boolean"}, function(self, receiver, once)
+dialing_device:add_overloaded_method("dial", {"matter_receiver", "boolean"}, function(self, receiver, once)
   return self:dial(self.default_transmitter, receiver, once)
 end)
 
-dialing_device:add_overloaded_method("dial", {"receiver"}, function(self, receiver)
+dialing_device:add_overloaded_method("dial", {"matter_receiver"}, function(self, receiver)
   return self:dial(self.default_transmitter, receiver)
 end)
 
-dialing_device:add_overloaded_method("dial_once", {"transmitter", "receiver"}, function(self, transmitter, receiver)
+dialing_device:add_overloaded_method("dial_once", {"matter_transmitter", "matter_receiver"}, function(self, transmitter, receiver)
   return self:dial(transmitter, receiver, true)
 end)
 
-dialing_device:add_overloaded_method("dial_once", {"receiver"}, function(self, receiver)
+dialing_device:add_overloaded_method("dial_once", {"matter_receiver"}, function(self, receiver)
   return self:dial(self.default_transmitter, receiver, true)
 end)
 
-dialing_device:add_overloaded_method("interrupt", {"transmitter"}, function(self, transmitter)
+dialing_device:add_overloaded_method("interrupt", {"matter_transmitter"}, function(self, transmitter)
   return self.component.interrupt(transmitter.position)
 end)
 
