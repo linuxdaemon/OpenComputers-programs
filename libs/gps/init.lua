@@ -96,8 +96,8 @@ function gps.locate( timeout, modem, debug )
       break
     end
     -- We received a message from a modem
-    local from = e[2]
-    local distance = e[4]
+    local from = e[3]
+    local distance = e[5]
     if not from then
       error("nil from address")
     end
