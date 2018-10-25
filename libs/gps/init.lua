@@ -5,7 +5,7 @@ local gps = {
   header="GPS"
 }
 
-local vector = require "vector"
+local vector = require "vector2"
 local component = require "component"
 local event = require "event"
 
