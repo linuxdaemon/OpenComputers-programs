@@ -72,6 +72,10 @@ function Vector:tostring()
   return string.format("%s,%s,%s", self.x, self.y, self.z)
 end
 
+function Vector:totable()
+  return {x=self.x, y=self.y, z=self.z}
+end
+
 Vector.instance_meta.__add = Vector.add
 Vector.instance_meta.__sub = Vector.sub
 Vector.instance_meta.__mul = Vector.mul
