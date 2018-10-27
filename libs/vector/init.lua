@@ -82,6 +82,10 @@ function vector.new(x, y, z)
   return Vector(x, y, z)
 end
 
+function vector.from(tbl)
+  return vector.new(tbl.x, tbl.y, tbl.z)
+end
+
 vector.Vector = Vector
 
 return vector
