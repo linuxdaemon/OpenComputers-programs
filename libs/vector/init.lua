@@ -4,9 +4,9 @@ local vector = {}
 local Vector = class()
 
 function Vector:_init(x, y, z)
-  self.x = x or 0
-  self.y = y or 0
-  self.z = z or 0
+  self.x = tonumber(x) or 0
+  self.y = tonumber(y) or 0
+  self.z = tonumber(z) or 0
 end
 
 function Vector:add(other)
