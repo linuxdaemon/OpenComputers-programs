@@ -1,6 +1,7 @@
 -- Modified from https://github.com/OpenPrograms/Jomik-Programs/blob/6cc725ba24e9a45a0f70a97d3031151347a6ee2f/programs.cfg
 
-local robot = require("robot")
+local component = require("component")
+local sides = require("sides")
 local filesystem = require("filesystem")
 local serialization = require("serialization")
 local gps = require("gps2")
@@ -80,8 +81,8 @@ function location.set_from_gps(set_orientation)
   if set_orientation then
     orientation = DEFAULT_ORIENTATION
     local pos1 = vector.from(position)
-    while not robot.forward() do
-      robot.up()
+    while not component.robot.move(sides.forward) do
+      component.robot.move(sides.up)
       pos1 = vector.from(position)
     end
     -- wait one second for movement to complete
