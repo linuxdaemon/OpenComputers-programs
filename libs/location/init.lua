@@ -79,6 +79,7 @@ end
 function location.set_from_gps(set_orientation)
   position = get_gps_vector()
   if set_orientation then
+    local start_pos = position
     orientation = DEFAULT_ORIENTATION
     local pos1 = vector.from(position)
     while not component.robot.move(sides.forward) do
@@ -88,6 +89,11 @@ function location.set_from_gps(set_orientation)
     -- wait one second for movement to complete
     os.sleep(1)
     local pos2 = get_gps_vector()
+    component.robot.move(sides.back)
+    local height = (position - start_pos).y
+    for _=1,height do
+      component.robot.move(sides.down)
+    end
     orientation = pos2 - pos1
   end
   saveData()
