@@ -67,8 +67,16 @@ function location.get()
   return position, orientation
 end
 
+local function get_gps_vector()
+  local x, y, z = gps.locate(5)
+  if x == nil then
+    error("Unable to get GPS location")
+  end
+  return Vector(x, y, z)
+end
+
 function location.set_from_gps(set_orientation)
-  position = Vector(gps.locate(5))
+  position = get_gps_vector()
   if set_orientation then
     orientation = DEFAULT_ORIENTATION
     local pos1 = vector.from(position)
@@ -78,7 +86,7 @@ function location.set_from_gps(set_orientation)
     end
     -- wait one second for movement to complete
     os.sleep(1)
-    local pos2 = Vector(gps.locate(5))
+    local pos2 = get_gps_vector()
     orientation = pos2 - pos1
   end
   saveData()
