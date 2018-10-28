@@ -76,6 +76,8 @@ function location.set_from_gps(set_orientation)
       robot.up()
       pos1 = vector.from(position)
     end
+    -- wait one second for movement to complete
+    os.sleep(1)
     local pos2 = Vector(gps.locate(5))
     orientation = pos2 - pos1
   end
