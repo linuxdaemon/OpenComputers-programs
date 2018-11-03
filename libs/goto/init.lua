@@ -61,7 +61,7 @@ function lib.move_vector(vector)
     end
   end
 
-  move_y(vector.y > 0)
+  move_y(vector.y < 0)
 end
 
 function lib.goto_pos(position)
