@@ -10,6 +10,7 @@ function lib.move_vector(vector)
         while not robot.up() do
           robot.swingUp()
         end
+        vector.y = vector.y + 1
       end
     end
   end
