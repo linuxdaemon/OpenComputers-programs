@@ -1,5 +1,5 @@
 local vector = require("vector2")
-local libgoto = require("libgoto")
+local libgoto = require("goto")
 
 local args = {...}
 
