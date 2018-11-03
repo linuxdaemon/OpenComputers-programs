@@ -46,7 +46,7 @@ function lib.move_vector(vector)
 
   go_forward(vector.z)
 
-  local function move_z(invert)
+  local function move_y(invert)
     invert = invert or false
     local move, swing
     if invert then
@@ -61,7 +61,7 @@ function lib.move_vector(vector)
     end
   end
 
-  move_z(vector.z > 0)
+  move_y(vector.y > 0)
 end
 
 function lib.goto_pos(position)
