@@ -87,6 +87,7 @@ function gps.locate( timeout, modem, debug )
   local fixes = {}
   local received_from = {}
   local pos1, pos2 = nil, nil
+  local last_receive = nil
   while true do
     local e = {event.pull(timeout, "modem_message", modem.address, nil, gps.port, nil, gps.header)}
     if not e[1] then
@@ -104,6 +105,7 @@ function gps.locate( timeout, modem, debug )
     local packet = {table.unpack(e, 6)}
     -- ignore modems we've already seen
     if not received_from[from] then
+      last_receive = os.time()
       received_from[from] = true
       -- Ignore the packet header as we match it in the event.pull call already
       local message = {table.unpack(packet,2)}
@@ -129,6 +131,11 @@ function gps.locate( timeout, modem, debug )
           break
         end
       end
+    elseif last_receive and ((os.time() - last_receive) > (timeout*2)) then
+      if debug then
+        print("timeout reached")
+      end
+      break
     end
   end
 
