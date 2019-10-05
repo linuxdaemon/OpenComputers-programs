@@ -3,7 +3,7 @@ local thread = require("thread")
 
 local t
 
-function start()
+function start(loc)
   local x, y, z
   if loc then
     print("Using static location")
