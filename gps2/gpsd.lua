@@ -4,11 +4,20 @@ local thread = require("thread")
 local t
 
 function start()
+  local x, y, z
   if loc then
-    t = thread.create(gps.host, loc.x, loc.y, loc.z)
+    print("Using static location")
+    x = loc.x
+    y = loc.y
+    z = loc.z
   else
-    t = thread.create(gps.host)
+    x, y, z = gps.locate()
+    if not x then
+      print("Unable to find location")
+      return
+    end
   end
+  t = thread.create(gps.host, x, y, z)
 end
 
 function stop()
