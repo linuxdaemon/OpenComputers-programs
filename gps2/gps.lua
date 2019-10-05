@@ -4,7 +4,11 @@ local args = {...}
 
 local function get_loc()
   local x, y, z = libgps.locate()
-  print(string.format("Current Position: %d, %d, %d", x, y, z))
+  if x then
+    print(string.format("Current Position: %d, %d, %d", x, y, z))
+  else
+    print("Unable to get location")
+  end
 end
 
 local function host_gps()
