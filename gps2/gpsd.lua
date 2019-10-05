@@ -18,6 +18,7 @@ function start()
     end
   end
   t = thread.create(gps.host, x, y, z)
+  t:detach()
 end
 
 function stop()
