@@ -3,13 +3,13 @@ local thread = require("thread")
 
 local t
 
-function start(loc)
+function start()
   local x, y, z
-  if loc then
+  if args then
     print("Using static location")
-    x = loc.x
-    y = loc.y
-    z = loc.z
+    x = args.x
+    y = args.y
+    z = args.z
   else
     x, y, z = gps.locate()
     if not x then
