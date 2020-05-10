@@ -1,27 +1,29 @@
 local class = require("class")
+local side_wrap = require("side_wrap")
 
-local Inventory = class()
+local Inventory = class("Inventory")
 
 function Inventory:_init(controller, side)
   self.controller = controller
   self.side = side
+  self.proxy = side_wrap.SideWrapper.from_proxy(controller, side)
   self.free_slot = 1
 end
 
 function Inventory:size()
-  return self.controller.getInventorySize(self.side)
+  return self.proxy:invoke("getInventorySize")
 end
 
 function Inventory:getStackInSlot(slot)
-  return self.controller.getStackInSlot(self.side, slot)
+  return self.proxy:invoke("getStackInSlot", slot)
 end
 
 function Inventory:getStackSizeInSlot(slot)
-  return self.controller.getSlotStackSize(self.side, slot)
+  return self.proxy:invoke("getSlotStackSize", slot)
 end
 
 function Inventory:transferSlotToSide(...)
-  return self.controller.transferItem(self.side, ...)
+  return self.proxy:invoke("transferItem", ...)
 end
 
 function Inventory:getNextFreeSlot()
@@ -36,7 +38,7 @@ function Inventory:getNextFreeSlot()
 end
 
 function Inventory:getAllStacks()
-  return self.controller.getAllStacks(self.side)
+  return self.proxy:invoke("getAllStacks")
 end
 
 return {
